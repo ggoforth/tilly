@@ -2,7 +2,7 @@
 
 > *AI for Meeples* — your Agricola coach for Board Game Arena.
 
-> *"Just because we couldn't doesn't mean we stopped to ask if we should."*
+> *"Just because we could doesn't mean we stopped to ask if we should."*
 > — Ian Malcolm, probably
 
 Tilly is a locally-installed Chrome/Arc extension that watches your Agricola
