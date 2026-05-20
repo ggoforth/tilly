@@ -426,19 +426,36 @@ button { font: 12px system-ui; background: #2a2c34; color: #e8e8ea; border: 1px 
 button:hover { background: #343742; }
 button.primary { background: #1f6f43; border-color: #2a8a55; color: #fff; }
 button.on { background: #1f6f43; border-color: #2a8a55; color: #fff; }
-.evmeta { padding: 8px 11px; color: #9aa; border-bottom: 1px solid #23242b; }
-.evmeta .reason { color: #777; font-size: 11px; margin-top: 2px; }
-.stats { display: flex; gap: 10px; padding: 7px 11px; border-bottom: 1px solid #23242b;
-  flex-wrap: wrap; }
+/* Events panel content sections — console-style dark backdrop. The
+   panel-level grass background still shows at the edges (so Events sits
+   cohesively next to the themed chat panel), but every content block
+   below the header sits on a near-opaque dark layer so the technical
+   text reads cleanly. Text colors were originally calibrated for an
+   all-dark panel; they were too washed-out against the grass. */
+.events .evmeta,
+.events .stats,
+.events .ctl,
+.events .feed {
+  background-color: rgba(20, 22, 28, 0.94);
+  backdrop-filter: blur(1px);
+}
+.evmeta { padding: 8px 11px; color: #c8cad0; border-bottom: 1px solid #2a2b32; }
+.evmeta .reason { color: #a8aab2; font-size: 11px; margin-top: 2px; }
+.stats { display: flex; gap: 10px; padding: 7px 11px; border-bottom: 1px solid #2a2b32;
+  flex-wrap: wrap; color: #c8cad0; }
 .stats b { color: #fff; }
 .ctl { display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 11px;
-  border-bottom: 1px solid #23242b; }
+  border-bottom: 1px solid #2a2b32; }
 .ctl button { font-size: 11px; padding: 5px 9px; }
 .feed { flex: 1; overflow-y: auto; padding: 4px 0; }
 .row { display: grid; grid-template-columns: 58px 52px 1fr; gap: 6px;
-  padding: 3px 11px; border-bottom: 1px solid #1d1e24; }
-.row .tm { color: #6b6d77; } .row .kd { color: #8ab4ff; font-size: 10px;
-  text-transform: uppercase; } .row .sm { color: #d6d6da; word-break: break-word; }
+  padding: 3px 11px; border-bottom: 1px solid #23242b; }
+.row .tm { color: #9aa0aa; font-variant-numeric: tabular-nums; }
+.row .kd {
+  color: #8ab4ff; font-size: 10px; font-weight: 600;
+  letter-spacing: .4px; text-transform: uppercase;
+}
+.row .sm { color: #e8e9ed; word-break: break-word; }
 .row.turn { background: #1a2c1f; } .row.turn .sm { color: #7fe6a4; font-weight: 600; }
 `;
 
