@@ -2,6 +2,9 @@
 
 > *AI for Meeples* — your Agricola coach for Board Game Arena.
 
+> *"Just because we couldn't doesn't mean we stopped to ask if we should."*
+> — Ian Malcolm, probably
+
 Tilly is a locally-installed Chrome/Arc extension that watches your Agricola
 games on Board Game Arena and streams move advice into a docked panel —
 fueled by your own OpenRouter LLM key. She also captures full game state,
