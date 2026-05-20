@@ -1,15 +1,16 @@
-# Agricola Observatory (BGA)
+# Tilly
 
-A locally-installed Chrome/Arc extension that **records** what happens in your
-Agricola games on Board Game Arena — full game state, the notification stream,
-every turn, your cards and farm — and lets you export it as JSON.
+> *AI for Meeples* — your Agricola coach for Board Game Arena.
 
-**Why it exists:** it's the recon step before an AI advisor. We don't yet know
-exactly how BGA represents Agricola's state, and guessing wrong would mean
-rework. This tool captures the real schema from live games so the advisor can be
-built on facts. It is intentionally **observe-only**: no AI, no advice, no
-clicking or automation — it never touches the game (so unranked play stays
-clean). Full design: `openspec/changes/add-bga-agricola-observatory/`.
+Tilly is a locally-installed Chrome/Arc extension that watches your Agricola
+games on Board Game Arena and streams move advice into a docked panel —
+fueled by your own OpenRouter LLM key. She also captures full game state,
+the notification stream, every turn, your cards and farm, and lets you
+export it all as JSON for offline review.
+
+Tilly is intentionally **observe-only**: no clicking, no automation, no
+touching the game (so unranked play stays clean). She advises — she never
+plays for you. Full design history lives under `openspec/changes/`.
 
 ## Build
 
@@ -25,7 +26,8 @@ npm run build      # → dist/   (npm run watch to rebuild on change)
 3. **Load unpacked** → select the `dist/` folder.
 4. Open a Board Game Arena **Agricola** table and play normally.
 
-A dark **Agricola Observatory** panel appears on the right of the table.
+A **Tilly** panel appears docked beside the table — themed in parchment,
+wood, and grass to match Agricola.
 
 > **Important:** the probe is registered when the extension loads, so **reload
 > the BGA game tab** after first installing (or after hitting **Reload** on the
@@ -60,8 +62,8 @@ so it never covers the board). It advises — it never plays for you.
    ("why not X?") — answers are grounded in the current position.
 
 Your key is stored locally, used only for `openrouter.ai`, never injected into
-the game page, and never written to the exported log. No key → the advisor is
-cleanly disabled and the observatory still captures normally. Every
+the game page, and never written to the exported log. No key → Tilly's advice
+is cleanly disabled and the capture pipeline still runs normally. Every
 recommendation and the move you actually made are logged for later evaluation.
 
 ## Health states (what the pill means)
@@ -77,9 +79,9 @@ visible health change in the feed.
 
 ## Status
 
-v1 (observatory) and v2 (advisor + chat) are implemented. The learn-from-losses
-loop and observatory log-slimming are deliberately separate, later OpenSpec
-changes (`openspec/changes/`).
+The v1 capture pipeline and v2 advisor + chat are both implemented. The
+learn-from-losses loop and capture log-slimming are deliberately separate,
+later OpenSpec changes (`openspec/changes/`).
 
 ## Install a released build
 

@@ -99,7 +99,7 @@ export class SessionBuffer {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `agricola-observatory_${this.log.table.tableId}_${Date.now()}.json`;
+    a.download = `tilly_${this.log.table.tableId}_${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();

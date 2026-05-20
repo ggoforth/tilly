@@ -248,7 +248,7 @@ async function stream(
         Authorization: `Bearer ${cfg.key}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://boardgamearena.com',
-        'X-Title': 'Agricola Observatory',
+        'X-Title': 'Tilly (AI for Meeples)',
       },
       body: JSON.stringify({
         model: cfg.model,

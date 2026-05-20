@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Agricola Observatory (BGA)",
+  "name": "Tilly — AI for Meeples",
   "version": "0.2.0",
-  "description": "Agricola on Board Game Arena: observes the game and advises the best move via your own OpenRouter LLM. Observe-only — it never plays for you.",
+  "description": "AI for Meeples: Tilly is an Agricola coach for Board Game Arena. She watches the game and streams move advice into a docked panel via your own OpenRouter LLM key. Observe-only — she never plays for you.",
   "permissions": ["scripting", "storage", "unlimitedStorage", "tabs", "activeTab"],
   "host_permissions": ["*://*.boardgamearena.com/*", "https://openrouter.ai/*"],
   "background": {
