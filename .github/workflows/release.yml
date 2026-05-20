@@ -1,0 +1,95 @@
+# Release pipeline. Fires when a semver tag is pushed (e.g. `v0.2.0`) and
+# builds the Chrome extension zip. The build runs the same gate developers
+# use locally (`npm run check` = typecheck + tests + build) before the
+# artifact is published, so a green release is also a tested release.
+#
+# To cut a release locally:
+#   git tag v0.2.0
+#   git push origin v0.2.0
+#
+# Manual reruns: the `workflow_dispatch` trigger lets you re-run a build
+# from the Actions tab if you ever need to regenerate an artifact without
+# moving the tag.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (without leading v, e.g. 0.2.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write   # required by softprops/action-gh-release to create the release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve release version
+        id: version
+        # Tag pushes give us refs/tags/v0.2.0 → ref_name = v0.2.0.
+        # Manual dispatches give us the input directly.
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build extension
+        env:
+          # build.mjs strips the leading "v" and writes the value into
+          # dist/manifest.json verbatim, so the published manifest version
+          # matches the git tag instead of using the dev .build counter.
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: npm run build
+
+      - name: Package extension zip
+        id: package
+        # The zip's contents are the *contents* of dist/ (not dist/ itself),
+        # so the file paths inside match what Chrome / Arc expects when
+        # users extract and "Load unpacked" from the resulting folder.
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Strip leading v if it's still there (workflow_dispatch path).
+          VERSION="${VERSION#v}"
+          ZIP_NAME="tilly-${VERSION}.zip"
+          cd dist
+          zip -r "../${ZIP_NAME}" .
+          cd ..
+          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # On tag push: use the tag that triggered the workflow.
+          # On manual dispatch: tag from the input version (creates the tag).
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
+          name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
+          generate_release_notes: true
+          files: ${{ steps.package.outputs.zip_name }}
+          fail_on_unmatched_files: true

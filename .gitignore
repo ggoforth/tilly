@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output (zipped by the release workflow; never committed)
+dist/
+.test-dist/
+
+# Auto-incrementing dev build counter — local only; CI uses RELEASE_VERSION
+.build
+
+# Personal play captures used for local distiller iteration. Not test
+# fixtures (those live under test/fixtures/) and may include BGA table IDs
+# from your own games — keep them out of the public repo.
+observed-games/
+
+# Old in-place backup directory from the v1 → v2 cutover
+.backup-v1/
+
+# Tooling / editor / OS noise
+.claude/
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.tmp
+*.swp
+.env
+.env.*

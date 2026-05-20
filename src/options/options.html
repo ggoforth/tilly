@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Agricola Observatory — Options</title>
+    <style>
+      body { font: 14px/1.5 -apple-system, system-ui, sans-serif; background: #15161a;
+        color: #e8e8ea; margin: 0; padding: 28px; }
+      .wrap { max-width: 520px; margin: 0 auto; }
+      h1 { font-size: 17px; margin: 0 0 4px; }
+      p.sub { color: #9aa; margin: 0 0 22px; font-size: 13px; }
+      label { display: block; margin: 16px 0 6px; font-weight: 600; }
+      input { width: 100%; box-sizing: border-box; padding: 9px 11px; border-radius: 6px;
+        border: 1px solid #3a3d47; background: #1c1d23; color: #e8e8ea; font: inherit; }
+      .hint { color: #6b6d77; font-size: 12px; margin-top: 5px; }
+      .hint a { color: #8ab4ff; }
+      button { margin-top: 22px; background: #1f6f43; color: #fff; border: 1px solid #2a8a55;
+        border-radius: 6px; padding: 9px 18px; font: inherit; cursor: pointer; }
+      button:hover { background: #25814f; }
+      #status { margin-left: 12px; color: #5fdc8a; font-size: 13px; }
+      .note { margin-top: 26px; color: #6b6d77; font-size: 12px; border-top: 1px solid #2c2e36;
+        padding-top: 14px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Agricola Observatory — Advisor</h1>
+      <p class="sub">Observe-only. The advisor recommends moves; it never plays for you.</p>
+
+      <label for="key">OpenRouter API key</label>
+      <input id="key" type="password" autocomplete="off" spellcheck="false"
+        placeholder="sk-or-..." />
+      <div class="hint">
+        Stored locally in this browser only, used solely for openrouter.ai. Get one at
+        <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer">openrouter.ai/keys</a>.
+      </div>
+
+      <label for="model">Model</label>
+      <input id="model" type="text" spellcheck="false"
+        placeholder="google/gemini-2.5-flash" />
+      <div class="hint">Any OpenRouter model id. A fast model is recommended for live play.</div>
+
+      <div>
+        <button id="save">Save</button>
+        <span id="status"></span>
+      </div>
+
+      <p class="note">Your key is never sent anywhere except OpenRouter, never injected
+        into the game page, and never written to the exported session log.</p>
+    </div>
+    <script src="options.js"></script>
+  </body>
+</html>

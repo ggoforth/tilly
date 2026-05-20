@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Agricola Observatory (BGA)",
+  "version": "0.2.0",
+  "description": "Agricola on Board Game Arena: observes the game and advises the best move via your own OpenRouter LLM. Observe-only — it never plays for you.",
+  "permissions": ["scripting", "storage", "unlimitedStorage", "tabs", "activeTab"],
+  "host_permissions": ["*://*.boardgamearena.com/*", "https://openrouter.ai/*"],
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["*://*.boardgamearena.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

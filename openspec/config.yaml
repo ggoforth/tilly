@@ -1,0 +1,96 @@
+schema: spec-driven
+
+context: |
+  Product: a locally-installed Chrome/Arc (Manifest V3) extension that helps the
+  user play Agricola on Board Game Arena. Built with TypeScript + esbuild, no UI
+  framework (plain TS + DOM), persistence via chrome.storage.local, build-stamped
+  versioning (manifest version gets an auto-incrementing 4th segment so a reload
+  is visibly confirmable in the sidebar).
+
+  v1 (the "observatory", DONE and working) is the foundation: a MAIN-world probe
+  (registered via chrome.scripting.registerContentScripts) reads
+  window.gameui.gamedatas and hooks BGA's modern notification queue
+  (gameui.notifqueue.onNotification — the verified ingress; legacy dojo and the
+  log channel are NOT the path) plus a ~1s gamestate poll. It relays via
+  window.postMessage to an isolated content script that owns the session log
+  (chrome.storage.local), the Shadow-DOM sidebar, and JSON export. A real
+  captured game confirmed that at every "your turn" decision point we have: the
+  full board (players[].board/hand/resources/score), the legal action set
+  (gamedatas.gamestate.possibleactions / gamedatas.engine), and full card rules
+  text (card objects' desc). notification↔snapshot pairing is exact.
+
+  ACTIVE CHANGE (v2) = the advisor + chat. LOCKED decisions:
+  - Advise-only. It MUST NOT take any in-game action or automate play. This is a
+    hard constraint (preserves the user's unranked-only ethic; BGA Terms forbid
+    bot play). Same observe-only boundary as v1.
+  - Auto on the user's turn: on each of the user's decision points it produces a
+    recommendation automatically.
+  - Advice content = the single best move + a concise rationale ("top move +
+    why"), streamed into the sidebar.
+  - Plus interactive chat: the user can ask "why not X?" grounded in the current
+    position briefing.
+
+  v2 architecture:
+  - A pure heuristic STATE DISTILLER turns a gamedatas snapshot into a compact
+    (~1-3 KB, not ~1 MB) "position briefing": the user's farm/resources/food,
+    hand with each card's verbatim rules text, opponent summary, action board +
+    accumulated goods, round/phase, and the legal possibleactions.
+  - The OpenRouter call lives in the SERVICE WORKER (cross-origin, off the page,
+    holds the key). Data flow: probe → content (distill) → worker (OpenRouter) →
+    content (stream into sidebar).
+  - The user pastes their OWN OpenRouter API key into an extension options page;
+    the assistant never enters it. Key is extension-local, used only for
+    openrouter.ai. Single user-selected model (a picker). Static strategy
+    preamble uses prompt caching.
+  - Chat shares the same position briefing as context; the thread refreshes when
+    the position materially changes.
+  - recommended-vs-actual logging extends the observatory session log (bump
+    schemaVersion): record each recommendation and the move actually taken — the
+    empirical quality seam and the input for a future learn-from-losses change.
+
+  Privacy/security: the user supplies their own key (assistant must never enter
+  credentials). Board state is sent to the user's chosen LLM — inherent to the
+  feature and opt-in by configuring it; strip opponent handles before sending.
+  Still strictly observe-only.
+
+  Graceful degradation: zero-config still runs as the observatory. No key →
+  advisor cleanly disabled with a clear "set your OpenRouter key" message,
+  capture continues. OpenRouter error/timeout → surfaced in the sidebar, capture
+  continues, the game is never blocked, nothing crashes.
+
+  Proof posture: there is no git repo and no CI yet — state this gap explicitly.
+  Available proof: strict `tsc --noEmit` (Level 3). The state distiller is PURE
+  (snapshot → briefing) and MUST be unit-tested against real snapshot fixtures
+  extracted from the captured game in observed-games/. Add a minimal test runner
+  using Node's built-in node:test (no new deps) and a `npm run check` =
+  typecheck + test + build local gate. Explicitly flag the unverifiable-by-
+  automation parts: LLM advice quality and live OpenRouter/BGA integration —
+  mitigated by recommended-vs-actual logging (empirical) and a manual end-to-end
+  check, not pretended to be CI-proven.
+
+  Out of scope for v2 (each its own later OpenSpec change): observatory log
+  slimming (the ~205 MB/game problem), the learn-from-losses loop, and any form
+  of automation. Conventions: OpenSpec manages specs/build; conventional commits.
+
+rules:
+  proposal:
+    - Must include an explicit Non-goals section stating that this change is
+      advise-only with no in-game actions or automation, no learn-from-losses
+      loop, and no observatory log slimming.
+  design:
+    - Must define the position-briefing schema concretely as TypeScript shapes.
+    - Must specify the service-worker LLM boundary and that the user supplies
+      their own OpenRouter key via an options page (the assistant never enters
+      it).
+    - Must specify graceful degradation for the no-key and OpenRouter
+      error-or-timeout paths, and privacy (board state goes to the user-chosen
+      LLM; opponent handles stripped).
+    - Must identify proof mechanisms per the proof posture and explicitly flag
+      the no-CI and unverifiable-by-automation gaps with rationale.
+  tasks:
+    - Break tasks into chunks of at most about 2 hours.
+    - Must include a pure state-distiller module with unit tests against real
+      snapshot fixtures from observed-games, a node:test runner plus an
+      npm-run-check (typecheck plus test plus build) gate, and a manual
+      end-to-end task verifying advice and chat appear on the user turn in a
+      real BGA game.

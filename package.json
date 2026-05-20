@@ -1,0 +1,20 @@
+{
+  "name": "agricola-observatory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Read-only telemetry capture for Agricola on Board Game Arena (observe-only).",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "node test.mjs",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "@types/node": "^25.8.0",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.4"
+  }
+}
