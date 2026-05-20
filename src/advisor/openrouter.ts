@@ -202,7 +202,7 @@ interface ChatMsg {
 }
 
 function buildMessages(req: AdvisorRequest): ChatMsg[] {
-  if (req.kind === 'cancel') return [];
+  if (req.kind === 'cancel' || req.kind === 'get-last-prompt') return [];
   const briefing = JSON.stringify(req.briefing);
   const msgs: ChatMsg[] = [{ role: 'system', content: STRATEGY_PREAMBLE }];
   if (req.kind === 'advise') {
@@ -230,6 +230,23 @@ function buildMessages(req: AdvisorRequest): ChatMsg[] {
   return msgs;
 }
 
+/** Cache of the most recently assembled prompt, written every time we send
+ *  an advise/chat request to OpenRouter. The diagnostic "Copy last prompt"
+ *  button in the Events panel reads this on demand via the get-last-prompt
+ *  message. Module-level so it survives across port reconnects within the
+ *  same service-worker lifetime. */
+let lastPromptText: string | null = null;
+
+/** Convert a messages array to a human-readable block for clipboard /
+ *  inspection. Plain newlines (not JSON-escaped \n) so the system preamble
+ *  and the position briefing render legibly when pasted into a chat or
+ *  text editor. */
+function formatPromptForClipboard(messages: ChatMsg[]): string {
+  return messages
+    .map((m) => `====== ${m.role.toUpperCase()} ======\n${m.content}`)
+    .join('\n\n');
+}
+
 async function stream(
   req: Extract<AdvisorRequest, { kind: 'advise' | 'chat' }>,
   signal: AbortSignal,
@@ -240,6 +257,9 @@ async function stream(
     send({ kind: 'error', requestId: req.requestId, error: 'no-key' });
     return;
   }
+  // Build once so the prompt we cache is byte-identical to what gets sent.
+  const messages = buildMessages(req);
+  lastPromptText = formatPromptForClipboard(messages);
   let res: Response;
   try {
     res = await fetch(ENDPOINT, {
@@ -253,7 +273,7 @@ async function stream(
       body: JSON.stringify({
         model: cfg.model,
         stream: true,
-        messages: buildMessages(req),
+        messages,
       }),
       signal,
     });
@@ -330,6 +350,18 @@ export function registerAdvisorPort(): void {
       if (req.kind === 'cancel') {
         inflight.get(req.requestId)?.abort();
         inflight.delete(req.requestId);
+        return;
+      }
+      if (req.kind === 'get-last-prompt') {
+        try {
+          port.postMessage({
+            kind: 'last-prompt',
+            requestId: req.requestId,
+            prompt: lastPromptText,
+          } satisfies AdvisorResponse);
+        } catch {
+          /* port closed */
+        }
         return;
       }
       if (req.kind !== 'advise' && req.kind !== 'chat') return;

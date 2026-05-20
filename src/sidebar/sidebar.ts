@@ -81,6 +81,10 @@ export interface SidebarHandlers {
   onClear(): void;
   onOpenOptions(): void;
   onSendChat(text: string): void;
+  /** Diagnostic: returns the most recent assembled prompt that was sent to
+   *  the LLM, or null if nothing has been sent yet. Wired to the
+   *  "Copy last prompt" button in the Events panel. */
+  onCopyPrompt(): Promise<string | null>;
 }
 
 /** Format a timestamp into a short hh:mm label. Accepts an ISO string,
@@ -1417,6 +1421,7 @@ export class Sidebar {
         <button data-el="shot">Screenshots: off</button>
         <button data-el="exp">Export JSON</button>
         <button data-el="clr">Clear</button>
+        <button data-el="prompt-copy" title="Copy the most recent LLM prompt to the clipboard">Copy last prompt</button>
       </div>
       <div class="feed" data-el="feed"></div>`;
 
@@ -1438,7 +1443,7 @@ export class Sidebar {
       'newpill', 'keybanner', 'keybanner-btn',
       'chat-input', 'chat-send', 'ev-close', 'probe', 'table', 'reason',
       'c-ev', 'c-no', 'c-sn', 'c-sh', 'cap', 'shot', 'exp', 'clr', 'feed',
-      'resize', 'copy',
+      'resize', 'copy', 'prompt-copy',
     ]) {
       this.els[k] = q(k);
     }
@@ -1518,6 +1523,40 @@ export class Sidebar {
     (this.els['clr'] as HTMLButtonElement).onclick = () => {
       if (confirm('Clear the captured session log for this table?')) {
         this.handlers.onClear();
+      }
+    };
+    // Copy last prompt — diagnostic affordance. Async because it has to
+    // round-trip through the advisor port to the worker (which is the only
+    // place that holds the assembled prompt). Flashes the button label so
+    // the user sees feedback without a noisy toast / alert.
+    const promptBtn = this.els['prompt-copy'] as HTMLButtonElement;
+    const origPromptLabel = promptBtn.textContent ?? 'Copy last prompt';
+    const flashPromptBtn = (label: string): void => {
+      promptBtn.textContent = label;
+      window.setTimeout(() => {
+        promptBtn.textContent = origPromptLabel;
+      }, 1600);
+    };
+    promptBtn.onclick = async () => {
+      promptBtn.disabled = true;
+      try {
+        const prompt = await this.handlers.onCopyPrompt();
+        if (prompt == null) {
+          flashPromptBtn('No prompt yet');
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(prompt);
+          flashPromptBtn('Copied!');
+        } catch {
+          flashPromptBtn('Clipboard failed');
+        }
+      } finally {
+        // Re-enable a tick after the flash finishes so users don't
+        // double-click while the indicator is still showing the result.
+        window.setTimeout(() => {
+          promptBtn.disabled = false;
+        }, 1700);
       }
     };
   }

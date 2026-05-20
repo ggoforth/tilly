@@ -36,6 +36,10 @@ class AdvisorClient {
     advise: undefined,
     chat: undefined,
   };
+  // Pending one-shot diagnostic queries (currently just "get last prompt").
+  // Kept separate from `slots` because they don't stream and shouldn't
+  // cancel or be cancelled by advise/chat traffic.
+  private pendingPrompts = new Map<string, (p: string | null) => void>();
 
   private ensurePort(): chrome.runtime.Port {
     if (!this.port) {
@@ -51,6 +55,10 @@ class AdvisorClient {
             s.h.onError('advisor disconnected');
           }
         }
+        // Resolve any pending diagnostic queries with null so callers don't
+        // hang waiting for a worker that's gone.
+        for (const resolve of this.pendingPrompts.values()) resolve(null);
+        this.pendingPrompts.clear();
       });
       this.port = p;
     }
@@ -64,6 +72,14 @@ class AdvisorClient {
   }
 
   private onMessage(r: AdvisorResponse): void {
+    if (r.kind === 'last-prompt') {
+      const resolve = this.pendingPrompts.get(r.requestId);
+      if (resolve) {
+        this.pendingPrompts.delete(r.requestId);
+        resolve(r.prompt);
+      }
+      return;
+    }
     const kind = this.slotForId(r.requestId);
     if (!kind) return;
     const slot = this.slots[kind]!;
@@ -74,7 +90,7 @@ class AdvisorClient {
       const { h, acc } = slot;
       this.slots[kind] = undefined;
       h.onDone(r.full || acc);
-    } else {
+    } else if (r.kind === 'error') {
       const { h } = slot;
       this.slots[kind] = undefined;
       h.onError(r.error);
@@ -104,6 +120,36 @@ class AdvisorClient {
   /** Cancel the advise slot specifically. Chat is untouched. */
   cancelAdvise(): void {
     this.cancelSlot('advise');
+  }
+
+  /** Diagnostic: fetch the most recent assembled prompt from the worker.
+   *  Resolves to null if no advise/chat has been sent yet, or if the
+   *  worker doesn't respond within a short window (port closed, etc).
+   *  Independent of the advise/chat slots — calling this won't cancel
+   *  anything in flight. */
+  getLastPrompt(): Promise<string | null> {
+    return new Promise<string | null>((resolve) => {
+      let settled = false;
+      const finish = (value: string | null): void => {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      };
+      const id = newRequestId();
+      this.pendingPrompts.set(id, finish);
+      // Safety timeout — if the worker doesn't respond in 3s, give up so
+      // the caller's UI doesn't hang forever on a dead port.
+      setTimeout(() => {
+        if (this.pendingPrompts.delete(id)) finish(null);
+      }, 3000);
+      try {
+        const port = this.ensurePort();
+        port.postMessage({ kind: 'get-last-prompt', requestId: id });
+      } catch {
+        this.pendingPrompts.delete(id);
+        finish(null);
+      }
+    });
   }
 
   private start(

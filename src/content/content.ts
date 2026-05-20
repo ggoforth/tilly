@@ -147,6 +147,7 @@ async function main(): Promise<void> {
     },
     onOpenOptions: () => void chrome.runtime.openOptionsPage(),
     onSendChat: (text) => sendChat(text),
+    onCopyPrompt: () => advisorClient.getLastPrompt(),
   });
   sidebar.mount();
 

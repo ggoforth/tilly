@@ -29,13 +29,22 @@ export type AdvisorRequest =
       history: ChatTurn[];
       message: string;
     }
-  | { kind: 'cancel'; requestId: string };
+  | { kind: 'cancel'; requestId: string }
+  /** Diagnostic: ask the worker for the most recent assembled prompt so the
+   *  user can paste / inspect what the LLM actually saw. The prompt is
+   *  built on the worker side (where the API key lives) and the content
+   *  script doesn't have the system preamble — this echoes it back on
+   *  demand instead of forcing every request to also stream the prompt. */
+  | { kind: 'get-last-prompt'; requestId: string };
 
 /** worker -> content (over the port) */
 export type AdvisorResponse =
   | { kind: 'chunk'; requestId: string; delta: string }
   | { kind: 'done'; requestId: string; full: string }
-  | { kind: 'error'; requestId: string; error: string };
+  | { kind: 'error'; requestId: string; error: string }
+  /** Response to `get-last-prompt`. `prompt` is null if no advise/chat has
+   *  been sent yet in this worker session. */
+  | { kind: 'last-prompt'; requestId: string; prompt: string | null };
 
 export function newRequestId(): string {
   return `req_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
