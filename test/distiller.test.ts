@@ -761,6 +761,96 @@ test('summary uses "pigs" not "boar" so it matches resources.pig naming', () => 
   assert.doesNotMatch(r.briefing.summary!, /\bboar\b/);
 });
 
+test('family.canGrow is TRUE when farm has an empty room', () => {
+  // Live R8 regression: emptyRooms=1 but canGrow=false in the same briefing
+  // — internally contradictory. canGrow was hardcoded to false in distiller;
+  // now derived from emptyRooms > 0 so the family/room math stays consistent.
+  const fakeGd: any = {
+    gamestate: { id: 700, name: 'placeFarmer', active_player: ME, possibleactions: ['actPlaceFarmer'] },
+    players: {
+      [ME]: {
+        id: ME, name: 'me',
+        resources: { wood: 0, clay: 0, reed: 0, stone: 0 },
+        board: {
+          dropZones: [
+            // 3 rooms, only 2 farmers → 1 empty room
+            { type: 'room', locations: [{ x: 1, y: 1 }, { x: 1, y: 3 }, { x: 1, y: 5 }], roomType: 'wood' },
+          ],
+          pastures: [], fences: [],
+        },
+      },
+    },
+    meeples: [
+      { id: 1, type: 'farmer', pId: ME, location: 'board', x: 1, y: 1 },
+      { id: 2, type: 'farmer', pId: ME, location: 'board', x: 1, y: 3 },
+    ],
+    cards: { visible: [] },
+    turn: 8,
+  };
+  const r = distill(fakeGd, ME);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  assert.equal(r.briefing.me.farm.emptyRooms, 1, 'sanity: 3 rooms, 2 people → 1 empty');
+  assert.equal(
+    r.briefing.me.family.canGrow, true,
+    'with an empty room, canGrow MUST be true (Wish for Children path)',
+  );
+});
+
+test('summary surfaces CANNOT AFFORD for builds the player cannot pay for', () => {
+  // Live R8 regression: LLM repeatedly recommended "build a wood room" with
+  // 1 reed in stockpile (need 2). canBuildRoom was correctly false in the
+  // JSON, but the LLM ignored it — it was buried in the dense briefing.
+  // The fix surfaces affordability as a strong-signal summary line.
+  const bf: PositionBriefing = {
+    schemaVersion: 1,
+    round: 8, phase: 'work', isMyTurn: true,
+    legalActions: ['actPlaceFarmer'],
+    harvest: { nextHarvestRound: 9, roundsUntilHarvest: 1, foodNeededAtNextHarvest: 4, foodShortfall: 4 },
+    me: {
+      // 1 reed (not 2) → cannot afford a room.
+      resources: { food: 0, wood: 11, clay: 0, reed: 1, stone: 0, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 15, stable: 3 },
+      animals: { sheep: 0, boar: 0, cattle: 0 },
+      unplacedAnimals: { sheep: 0, boar: 0, cattle: 0 },
+      farm: { rooms: 3, roomType: 'wood', fields: 0, pastures: 0, stables: 0, fencedSpaces: 0, emptySpaces: 0, emptyRooms: 1, canBuildRoom: false, canBuildStable: true, canBuildFence: true },
+      family: { people: 2, canGrow: false },
+      played: [], placedFarmersThisRound: ['Copse'], hand: [],
+    },
+    opponents: [],
+    actionBoard: [{ id: 'ActionFarmExpansion', name: 'Farm Expansion' }],
+    availableMajorImprovements: [],
+  };
+  const s = buildBriefingSummary(bf);
+  // CAPS instruction + concrete numbers so the LLM can't miss why.
+  assert.match(s, /CANNOT AFFORD this turn — DO NOT recommend/);
+  assert.match(s, /Build Room via Farm Expansion/);
+  assert.match(s, /need 5 wood \+ 2 reed/);
+  assert.match(s, /have 11 wood, 1 reed/);
+});
+
+test('summary affirms "can build" actions when all canBuild* flags are true', () => {
+  // Inverse: with enough resources for everything, the summary says so —
+  // no false-positive "CANNOT AFFORD" warnings that would confuse the LLM.
+  const bf: PositionBriefing = {
+    schemaVersion: 1,
+    round: 5, phase: 'work', isMyTurn: true,
+    legalActions: ['actPlaceFarmer'],
+    harvest: { nextHarvestRound: 7, roundsUntilHarvest: 2, foodNeededAtNextHarvest: 4, foodShortfall: 0 },
+    me: {
+      resources: { food: 6, wood: 8, clay: 0, reed: 3, stone: 0, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 15, stable: 4 },
+      animals: { sheep: 0, boar: 0, cattle: 0 },
+      unplacedAnimals: { sheep: 0, boar: 0, cattle: 0 },
+      farm: { rooms: 2, roomType: 'wood', fields: 0, pastures: 0, stables: 0, fencedSpaces: 0, emptySpaces: 0, emptyRooms: 0, canBuildRoom: true, canBuildStable: true, canBuildFence: true },
+      family: { people: 2, canGrow: false },
+      played: [], placedFarmersThisRound: [], hand: [],
+    },
+    opponents: [], actionBoard: [], availableMajorImprovements: [],
+  };
+  const s = buildBriefingSummary(bf);
+  assert.match(s, /Affordability: can build rooms, stables, and fences this turn/);
+  assert.doesNotMatch(s, /CANNOT AFFORD/);
+});
+
 test('summary calls out harvest SHORTFALL in caps when food is short', () => {
   // Strong-signal language for the LLM. Lower-case "shortfall" lost in
   // attention; CAPS plus the gap number anchors the recommendation toward

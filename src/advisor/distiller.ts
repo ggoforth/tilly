@@ -343,7 +343,14 @@ function playerView(
       // either 'board' (on the farm) or an action card (still owned, just
       // out doing a job this round). Excludes 'reserve' (uninstantiated).
       people,
-      canGrow: false,
+      // canGrow: TRUE if there's an empty room to add a family member to.
+      // This covers the Wish for Children path (the common case); Urgent
+      // Wish for Children bypasses the room requirement but only appears
+      // in Phase 5+, and the LLM can check actionBoard for that exception.
+      // Was previously hardcoded false — surfacing 'no room to grow' even
+      // when emptyRooms > 0 (the live R8 trace showed emptyRooms=1 paired
+      // with canGrow=false, contradicting itself).
+      canGrow: farm.emptyRooms > 0,
     },
     played: Array.isArray(gd.playerCards)
       ? gd.playerCards
@@ -566,6 +573,28 @@ export function buildBriefingSummary(b: PositionBriefing): string {
 
   const familyLine = `Family: ${fam.people} people${fam.canGrow ? ' (can grow this turn)' : ', no room to grow'}.`;
 
+  // Affordability: surface canBuild* flags as a strong-signal line so the
+  // LLM cannot drift past them. Without this the constraint is buried mid-
+  // JSON and the LLM has repeatedly hallucinated affordability ("build a
+  // wood room" with 1 reed when 2 are required; see live R8 trace).
+  // Mirrors the structure of placedLine — explicit "DO NOT" instruction.
+  const cannotAfford: string[] = [];
+  if (!f.canBuildRoom) {
+    const have = `${r[f.roomType] ?? 0} ${f.roomType}, ${r.reed ?? 0} reed`;
+    cannotAfford.push(
+      `Build Room via Farm Expansion (need 5 ${f.roomType} + 2 reed; have ${have})`,
+    );
+  }
+  if (!f.canBuildStable) {
+    cannotAfford.push(`Build Stable (need 2 wood; have ${r.wood ?? 0})`);
+  }
+  if (!f.canBuildFence) {
+    cannotAfford.push(`Build Fence via Fencing (need 1+ wood; have ${r.wood ?? 0})`);
+  }
+  const affordabilityLine = cannotAfford.length > 0
+    ? `CANNOT AFFORD this turn — DO NOT recommend: ${cannotAfford.join('; ')}.`
+    : 'Affordability: can build rooms, stables, and fences this turn.';
+
   const placed = b.me.placedFarmersThisRound ?? [];
   const placedLine = placed.length > 0
     ? `Already placed this round: ${placed.join(', ')}. DO NOT recommend these — pick a different action.`
@@ -589,6 +618,7 @@ export function buildBriefingSummary(b: PositionBriefing): string {
     animalLine,
     stockpileLine,
     familyLine,
+    affordabilityLine,
     placedLine,
     openLine,
   ].join(' ');
