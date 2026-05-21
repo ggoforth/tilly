@@ -21,10 +21,18 @@ AGRICOLA RULES REFERENCE (read once, apply throughout):
 
 GAME STRUCTURE
 - 14 rounds total. Harvests fire AFTER rounds 4, 7, 9, 11, 13, 14.
-- Each round: a new action card is revealed → accumulator spaces tick → players take turns placing one farmer per turn until all family members are placed → end of round (and optional harvest).
+- At Harvest, you must feed your family.  2 food per family member if in a 2+ player game, or 3 food per player in a 1-player game.
+- Each round: a new action space is revealed → accumulator spaces tick resources or food → players take turns placing one farmer per turn until all family members are placed → end of round.  If it's round 4, 7, 9, 11, 13, or 14 then this round is the last chance you have to secure food.
+- Food can be secured in the following ways:
+  - Food accumulation spots (does the board have any right now)?
+  - Collecting animals but ONLY if the player has the fireplace (as the fireplace will allow them to cook food for the family).
+  - Collecting grain or vegetable.  Grain and vegetable are each worth 1 food if eaten without cooking.  If baked, grain can yield as much as 6+ food depending on the baking oven implemented.  Vegetables can be cooked with a fireplace or cooking hearth for more food.
+  - Ensure that with each turn, you tactically make bets on how you will be securing food at the next harvest (be it cooking, food spaces, etc.).
+  - Don't wait too long to figure out how you will feed your family.
+  - Also, don't always focus on food — in order to play well you must balance a food engine against resource needs and farm and family expansion.
 - Each player starts with: 2 family members, a 2-room wood house, 0 fields, 0 pastures, 0 animals, varying starting food (2 in standard, 3 in solo Beginner).
 
-ACTION CARD REVEAL SCHEDULE — when each card enters the board:
+ACTION SPACE REVEAL SCHEDULE — when each space enters the board:
 - Always available (revealed at game start): Farm Expansion, Meeting Place, Grain Seeds, Farmland, Lessons, Day Laborer, Forest, Clay Pit, Reed Bank, Fishing.
 - Phase 1 (one revealed each of rounds 1–4, in random order): Improvements, Fencing, Sheep Market, Grain Utilization.
 - Phase 2 (rounds 5–7): Western Quarry, House Redevelopment, Wish for Children.
@@ -36,7 +44,7 @@ ACTION CARD REVEAL SCHEDULE — when each card enters the board:
 Only the cards present in \`actionBoard\` THIS round are placeable. A card from a later phase does NOT exist on the board yet — never recommend one that isn't listed.
 
 ACTION CARD EFFECTS (only those currently in actionBoard apply this round):
-- Farm Expansion: Pay 5 of your house's material + 2 reed to build a new room (must be orthogonally adjacent to existing). May also build stables on empty farm spaces.
+- Farm Expansion: Pay 5 of your house's current material + 2 reed to build a new room (must be orthogonally adjacent to existing). May also build stables on empty farm spaces.
 - Meeting Place: Take the starting-player marker. May also play one minor improvement from \`me.hand\` (pay its cost).
 - Grain Seeds: Gain 1 grain.
 - Farmland: Add one field (must touch existing fields if any exist).
@@ -69,11 +77,12 @@ FAMILY & ROOMS
 
 FIELDS, GRAIN, VEGETABLES
 - Plow adds 1 field (orthogonally adjacent to existing field if any).
-- Sow 1 grain → 3 grain on field (yields 1/harvest until depleted; 1 stays in field if more remain). Sow 1 veg → 2 veg on field (same mechanic).
+- Sow 1 grain → 3 grain on field (yields 1/harvest until depleted; 1 stays in field if more remain). Sow 1 veg → 2 veg on field (same mechanic).  Some cards when played can affect the dynamic of how many veg or grain grow when planted.  For instance, one card, when in play, lets you plow extra fields, but you must yield one less grain or veg when planting.
 
 FENCING & PASTURES
 - Each pasture is one contiguous fenced area. Multiple pastures allowed.
-- A pasture holds 2 animals of ONE species; +2 more per stable inside it (cap 4 per pasture).
+- A pasture holds 2 animals of ONE species;
+- +2 more per stable inside it (capacity depends on how many spaces are fenced and how many stables are placed in the pasture).
 - Fence cost: 1 wood per segment.
 
 STABLES
@@ -83,22 +92,24 @@ STABLES
 - Max 4 stables per player.
 
 ANIMALS (sheep / boar / cattle)
-- Each animal MUST be housed (pasture, standalone stable, or 1-pet allowance in home) or LOST at end of round (returned to general supply).
-- \`me.unplacedAnimals.{sheep,boar,cattle}\` = currently in supply, available to cook/trade RIGHT NOW.
+- Each animal MUST be housed (pasture, standalone stable, or 1-pet allowance in home) or LOST at end of the turn (discarded entirely) or cooked.
+- \`me.unplacedAnimals.{sheep,boar,cattle}\` = currently in supply, available to cook/put to pasture RIGHT NOW.
 - \`me.animals.{sheep,boar,cattle}\` = total ownership (supply + housed).
-- Cooking conversion: Fireplace gives sheep→2 food, boar→2 food, cattle→3 food, grain→2 food, veg→3 food. Cooking Hearth: same rates plus added options.
+- Cooking conversion: Fireplace gives sheep→2 food, boar→2 food, cattle→3 food, grain→2 food, veg→3 food. Cooking Hearth: same rates plus added options.  Other cooking improvements can change the yield dynamics.
 - Breeding (at harvest): each species with ≥2 adults breeds 1 baby IF housing exists for the baby.
 
 CARDS
-- Occupations: 7 in hand at start. Played via Lessons (first free; subsequent 1 food each) or by certain occupations' abilities.
-- Minor improvements: 7 in hand. Played via Meeting Place, Improvements, etc. Per-card cost.
-- Major improvements: shared pool (\`availableMajorImprovements\`). Anyone can build. Per-card cost.
-- ALL played cards score their printed VP at game end (some have ongoing effects too).
+- Occupations: 7 in hand at start. Played via Lessons (first free; subsequent 1 or 2 food each) or by certain occupations' abilities.
+  - Occupations enable special abilities and can yield additional resources.  Consider the Lessons space if an occupation in hand supports the strategy you're using.
+  - Occupations are popular and often chosen as the first move in a game.
+- Minor improvements: 7 in hand. Played via Meeting Place, Improvements, etc. Per-card cost.  They too enable special abilities and should be considered with each turn.
+- Major improvements: shared pool (\`availableMajorImprovements\`). Anyone can build. Per-card cost. Once played it's no longer available to you, so make sure to review available major improvements.
+- ALL played cards score their printed VP at game end (some have ongoing effects or point generation too).
 
-HARVEST SEQUENCE (rounds 4 / 7 / 9 / 11 / 13 / 14)
+HARVEST SEQUENCE (immediately following rounds 4 / 7 / 9 / 11 / 13 / 14)
 1. Field phase: take 1 grain/veg per planted field.
 2. Feeding phase: pay 2 food per adult, 1 food per newborn (one just added this round, never acted). Each missing food → 1 begging token (−3 VP each, permanent).
-3. Breeding phase: animal pairs breed 1 baby IF housing exists.
+3. Breeding phase: animal pairs breed 1 baby IF housing exists; babies can be cooked as well if there are more than the housing allows and no room exists for them.
 
 END-OF-GAME SCORING (signed VP):
                   −1         1           2           3           4 (max)
@@ -124,13 +135,44 @@ STRATEGIC PRIORITIES BY PHASE
 - Mid (rounds 5–9): Diversify the farm — plow fields, plant grain/veg, build pastures, target a Fireplace or Cooking Hearth for food conversion. This is when Family Growth happens.
 - Late (rounds 10–14): Pivot to VP completion. Pick missing scoring categories (a missing animal type, a stone room upgrade via Farm Redevelopment / House Redevelopment, a final field). Don't start chains that need 3+ rounds to mature.
 
+FOOD SECURITY
+- Food security means establishing a food engine.
+- Food security means leveraging cards that generate food (like ovens or stoves).
+- Food security means planning ahead for how you plan to feed your expanding family each game.
+- Food security means knowing when harvest is, and ensuring that you've collected enough food, can cook enough food, or can use food collection spots to satisfy feeding.
+- Food security means knowing that the Baker Occupation allows you to bake at feeding time (special ability!).
+- Food security means planting crops knowing you can cook them.
+- Beggar cards are given for any family members not fed.  These are worth -3 points per card, and can not be removed once received.
+- It's really important to consider food, but it's not everything…
+  - Food security is NOT taking every food accumulation spot because it's the easy way.  Sometimes it's needed, but it's a sign your food engine isn't strong enough.
+  - Food security is NOT assuming that you can remove beggar cards — you can not.  Once you've got one, the only way forward is to score more points to wipe out the delta.
+
+Food security is an engine that reliably lets you have food when you need it, enabled by the cards you play on your turns.
+
+STRATEGIES TO CONSIDER
+Your goal is to maximize points.  The points are described elsewhere in this preamble, but one very good strategy is to consider the cards in your hand and how they multiply when combined with other cards.  For example:
+
+- An occupation card lets you build rooms when using Day Laborer.
+- A minor improvement that lets you plow a field when using Day Laborer.
+- Using Day Laborer with both of those cards in play yields:
+  - a new room
+  - a new field
+  - two food (the space's default function)
+- Always evaluate the synergies found between cards as you'll need to decide what to play when asked.
+- You should always develop a strategy when you set up your game.  For example:
+  - You see that we have Clay Deliveryman (yields lots of clay over time), which can buy fireplaces and hearths, which support a food engine using animals and vegetables.
+  - You also see a minor occupation that gets you 1 grain every time you get at least one clay.
+  - You would want to make sure you've played both cards early enough to make use of them.
+- Choose a food engine early on and establish it soon.
+- Expand your farm and family quickly.  Do not do so at the expense of getting beggar tokens.
+
 PLAYER-COUNT NOTES
 - 2-player: clay and food access are tight (single Clay Pit + few food-yielding spaces).
 - 3-player: reed and food are often the limiting factors.
 - 4-player: wood pressure + Family Growth competition (only one Wish for Children space — first-mover advantage matters).
 
 GENERAL STRATEGIC GUIDANCE
-- Growing your family multiplies your action throughput, but each new member needs 2 food per harvest. Avoid growth you cannot reliably feed.
+- Growing your family multiplies your action throughput, but each new member needs food per harvest (newborns eat 1, adults eat 2). Avoid growth you cannot reliably feed.
 - Cards are KEY to long-term VP. Strong cards give wood, food, bonus VP, or save/extra actions for low cost. But just because a card can be played doesn't mean it should — playing time has opportunity cost.
 - The most critical resource type varies by player count (see above).
 
