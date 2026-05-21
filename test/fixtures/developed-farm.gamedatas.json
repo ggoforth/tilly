@@ -1,0 +1,3201 @@
+{
+  "__note": "Slimmed snapshot from observed game 853319280 event 1908. Player 84298950 has a developed farm: 5 fields, 5 pastures, 15 fences. Used to lock in farm-state distillation regression coverage.",
+  "gamestate": {
+    "id": 29,
+    "active_player": "84298950",
+    "args": {
+      "vegetable": 2,
+      "grain": 3,
+      "wood": 1,
+      "stone": 8,
+      "zones": [
+        {
+          "id": 309,
+          "location": "board",
+          "pId": "84298950",
+          "type": "field",
+          "x": "3",
+          "y": "5",
+          "state": "0",
+          "uid": "3_5",
+          "crops": [],
+          "fieldType": null
+        },
+        {
+          "id": 347,
+          "location": "board",
+          "pId": "84298950",
+          "type": "field",
+          "x": "3",
+          "y": "3",
+          "state": "0",
+          "uid": "3_3",
+          "crops": [],
+          "fieldType": null
+        }
+      ],
+      "max": 99,
+      "optionalAction": true,
+      "automaticAction": false,
+      "previousEngineChoices": 5,
+      "previousSteps": [
+        17784
+      ],
+      "anytimeActions": [
+        {
+          "flow": {
+            "action": "REORGANIZE",
+            "pId": 84298950,
+            "desc": "<REORGANIZE>"
+          },
+          "desc": "<REORGANIZE>",
+          "optionalAction": false,
+          "independentAction": false
+        },
+        {
+          "flow": {
+            "action": "EXCHANGE",
+            "pId": 84298950,
+            "desc": "<COOK>"
+          },
+          "desc": "<COOK>",
+          "optionalAction": true,
+          "independentAction": false
+        }
+      ]
+    },
+    "type": "activeplayer",
+    "reflexion": {
+      "total": {
+        "84298950": 7775983,
+        "94800135": "7775982"
+      },
+      "initial": {
+        "84298950": 7775994
+      },
+      "initial_ts": {
+        "84298950": 1779077228925
+      }
+    },
+    "updateGameProgression": 100,
+    "name": "sow",
+    "description": "${actplayer} may sow their fields",
+    "descriptionmyturn": "${you} may sow your field(s)",
+    "descriptionskippable": "${actplayer} may sow their fields",
+    "descriptionmyturnskippable": "${you} may sow your field(s)",
+    "action": "stAtomicAction",
+    "possibleactions": [
+      "actSow",
+      "actPassOptionalAction",
+      "actRestart"
+    ],
+    "transitions": null,
+    "initialprivate": null
+  },
+  "players": {
+    "84298950": {
+      "id": 84298950,
+      "eliminated": false,
+      "no": 1,
+      "name": "to-son61",
+      "color": "008000",
+      "score": "39",
+      "resources": {
+        "wood": 1,
+        "clay": 0,
+        "reed": 2,
+        "stone": 8,
+        "food": 1,
+        "grain": 1,
+        "vegetable": 0,
+        "sheep": 0,
+        "pig": 0,
+        "cattle": 0,
+        "begging": 0,
+        "fence": 0,
+        "stable": 4
+      },
+      "board": {
+        "pastures": [
+          {
+            "nodes": [
+              {
+                "x": 5,
+                "y": 3
+              }
+            ],
+            "stables": []
+          },
+          {
+            "nodes": [
+              {
+                "x": 7,
+                "y": 1
+              }
+            ],
+            "stables": []
+          },
+          {
+            "nodes": [
+              {
+                "x": 7,
+                "y": 3
+              }
+            ],
+            "stables": []
+          },
+          {
+            "nodes": [
+              {
+                "x": 9,
+                "y": 1
+              }
+            ],
+            "stables": []
+          },
+          {
+            "nodes": [
+              {
+                "x": 9,
+                "y": 3
+              }
+            ],
+            "stables": []
+          }
+        ],
+        "fences": [
+          {
+            "id": 6,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "6",
+            "y": "1",
+            "state": "0"
+          },
+          {
+            "id": 7,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "7",
+            "y": "0",
+            "state": "0"
+          },
+          {
+            "id": 8,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "9",
+            "y": "0",
+            "state": "0"
+          },
+          {
+            "id": 9,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "10",
+            "y": "1",
+            "state": "0"
+          },
+          {
+            "id": 10,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "10",
+            "y": "3",
+            "state": "0"
+          },
+          {
+            "id": 11,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "9",
+            "y": "4",
+            "state": "0"
+          },
+          {
+            "id": 12,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "7",
+            "y": "4",
+            "state": "0"
+          },
+          {
+            "id": 13,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "6",
+            "y": "3",
+            "state": "0"
+          },
+          {
+            "id": 14,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "8",
+            "y": "1",
+            "state": "0"
+          },
+          {
+            "id": 15,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "8",
+            "y": "3",
+            "state": "0"
+          },
+          {
+            "id": 16,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "7",
+            "y": "2",
+            "state": "0"
+          },
+          {
+            "id": 17,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "5",
+            "y": "2",
+            "state": "0"
+          },
+          {
+            "id": 18,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "4",
+            "y": "3",
+            "state": "0"
+          },
+          {
+            "id": 19,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "5",
+            "y": "4",
+            "state": "0"
+          },
+          {
+            "id": 20,
+            "location": "board",
+            "pId": "84298950",
+            "type": "fence",
+            "x": "9",
+            "y": "2",
+            "state": "0"
+          }
+        ],
+        "dropZones": [
+          {
+            "type": "pasture",
+            "capacity": 2,
+            "locations": [
+              {
+                "x": 5,
+                "y": 3
+              }
+            ],
+            "stables": [],
+            "pId": 84298950,
+            "cId": "84298950-0",
+            "control": {}
+          },
+          {
+            "type": "pasture",
+            "capacity": 2,
+            "locations": [
+              {
+                "x": 7,
+                "y": 1
+              }
+            ],
+            "stables": [],
+            "pId": 84298950,
+            "cId": "84298950-1",
+            "control": {}
+          },
+          {
+            "type": "pasture",
+            "capacity": 2,
+            "locations": [
+              {
+                "x": 7,
+                "y": 3
+              }
+            ],
+            "stables": [],
+            "pId": 84298950,
+            "cId": "84298950-2",
+            "control": {}
+          },
+          {
+            "type": "pasture",
+            "capacity": 2,
+            "locations": [
+              {
+                "x": 9,
+                "y": 1
+              }
+            ],
+            "stables": [],
+            "pId": 84298950,
+            "cId": "84298950-3",
+            "control": {}
+          },
+          {
+            "type": "pasture",
+            "capacity": 2,
+            "locations": [
+              {
+                "x": 9,
+                "y": 3
+              }
+            ],
+            "stables": [],
+            "pId": 84298950,
+            "cId": "84298950-4",
+            "control": {}
+          },
+          {
+            "type": "room",
+            "capacity": 1,
+            "locations": [
+              {
+                "x": "1",
+                "y": "3"
+              },
+              {
+                "x": "1",
+                "y": "5"
+              },
+              {
+                "x": "1",
+                "y": "1"
+              },
+              {
+                "x": "3",
+                "y": "1"
+              },
+              {
+                "x": "5",
+                "y": "1"
+              }
+            ],
+            "pId": 84298950,
+            "cId": "84298950-5",
+            "control": {}
+          }
+        ],
+        "farmHandStable": null
+      },
+      "hand": [],
+      "harvestCost": 10,
+      "personalOwned": {
+        "farmer": 5,
+        "fence": 15,
+        "stable": 4
+      },
+      "ack": "wait"
+    },
+    "94800135": {
+      "id": 94800135,
+      "eliminated": false,
+      "no": 2,
+      "name": "the_begging_student",
+      "color": "ff0000",
+      "score": "16",
+      "resources": {
+        "wood": 0,
+        "clay": 5,
+        "reed": 1,
+        "stone": 1,
+        "food": 14,
+        "grain": 2,
+        "vegetable": 0,
+        "sheep": 0,
+        "pig": 0,
+        "cattle": 0,
+        "begging": 2,
+        "fence": 15,
+        "stable": 0
+      },
+      "board": {
+        "pastures": [],
+        "fences": [],
+        "dropZones": [
+          {
+            "type": "room",
+            "capacity": 1,
+            "locations": [
+              {
+                "x": "1",
+                "y": "3"
+              },
+              {
+                "x": "1",
+                "y": "5"
+              },
+              {
+                "x": "1",
+                "y": "1"
+              },
+              {
+                "x": "3",
+                "y": "1"
+              }
+            ],
+            "pId": 94800135,
+            "cId": "94800135-0",
+            "control": {}
+          },
+          {
+            "type": "stable",
+            "capacity": 1,
+            "locations": [
+              {
+                "x": "7",
+                "y": "5"
+              }
+            ],
+            "pId": 94800135,
+            "cId": "94800135-1",
+            "control": {}
+          },
+          {
+            "type": "stable",
+            "capacity": 1,
+            "locations": [
+              {
+                "x": "5",
+                "y": "3"
+              }
+            ],
+            "pId": 94800135,
+            "cId": "94800135-2",
+            "control": {}
+          },
+          {
+            "type": "stable",
+            "capacity": 1,
+            "locations": [
+              {
+                "x": "3",
+                "y": "5"
+              }
+            ],
+            "pId": 94800135,
+            "cId": "94800135-3",
+            "control": {}
+          },
+          {
+            "type": "stable",
+            "capacity": 1,
+            "locations": [
+              {
+                "x": "7",
+                "y": "3"
+              }
+            ],
+            "pId": 94800135,
+            "cId": "94800135-4",
+            "control": {}
+          }
+        ],
+        "farmHandStable": null
+      },
+      "hand": [
+        {
+          "id": "C107_Baker",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "2",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "FoodCategory",
+          "costText": "",
+          "costs": [
+            []
+          ],
+          "deck": "C",
+          "desc": [
+            "When you play this card and at the start of each feeding phase, you can take a __Bake Bread__ action."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Baker",
+          "numbering": "C107",
+          "players": "1+",
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "occupation",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>When you play this card and at the start of each feeding phase, you can take a <span class=\"action-card-name-reference\">Bake Bread</span> action.</div>",
+          "mini": false
+        },
+        {
+          "id": "B120_Sweep",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "3",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [
+            "This card text was updated for the digital implementation of the game."
+          ],
+          "stats": [],
+          "actionCard": false,
+          "category": "ResourceCategory",
+          "costText": "",
+          "costs": [
+            []
+          ],
+          "deck": "B",
+          "desc": [
+            "Each time before you use the action space above the most recent round 1-14 action space, you get 2 <CLAY>."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Sweep",
+          "numbering": "B120",
+          "players": "1+",
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "occupation",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>Each time before you use the action space above the most recent round 1-14 action space, you get 2 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div>.</div>",
+          "mini": false
+        },
+        {
+          "id": "A114_SeasonalWorker",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "5",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "CropCategory",
+          "costText": "",
+          "costs": [
+            []
+          ],
+          "deck": "A",
+          "desc": [
+            "Each time you use the __Day Laborer__ action space, you get 1 additional <GRAIN>. From round 6 on, you can choose to get 1 <VEGETABLE> instead."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Seasonal Worker",
+          "numbering": "A114",
+          "players": "1+",
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "occupation",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>Each time you use the <span class=\"action-card-name-reference\">Day Laborer</span> action space, you get 1 additional <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-grain\">\n        </div>\n      </div>. From round 6 on, you can choose to get 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-vegetable\">\n        </div>\n      </div> instead.</div>",
+          "mini": false
+        },
+        {
+          "id": "D126_FieldCultivator",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "6",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "ResourceCategory",
+          "costText": "",
+          "costs": [
+            []
+          ],
+          "deck": "D",
+          "desc": [
+            "Pile 1 <WOOD>, 1 <CLAY>, 1 <REED>, 1 <STONE>, 1 <REED>, 1 <CLAY>, and 1 <WOOD> on this card. Each time you harvest a field tile, you can also take the top good from the pile."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": true,
+          "animalHolder": false,
+          "name": "Field Cultivator",
+          "numbering": "D126",
+          "players": "1+",
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "occupation",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>Pile 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div>, 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div>, 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div>, 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div>, 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div>, 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div>, and 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div> on this card. Each time you harvest a field tile, you can also take the top good from the pile.</div>",
+          "mini": false
+        },
+        {
+          "id": "A93_BedMaker",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "7",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [
+            "This card allows exactly 1 growth action regardless of how many rooms are built."
+          ],
+          "stats": [],
+          "actionCard": false,
+          "category": "BoosterCategory",
+          "costText": "",
+          "costs": [
+            []
+          ],
+          "deck": "A",
+          "desc": [
+            "Each time you add rooms to your house, you can also pay 1 <WOOD> and 1 <GRAIN> to immediately get a __Family Growth with Room Only__ action."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": true,
+          "animalHolder": false,
+          "name": "Bed Maker",
+          "numbering": "A093",
+          "players": "1+",
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "occupation",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>Each time you add rooms to your house, you can also pay 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div> and 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-grain\">\n        </div>\n      </div> to immediately get a <span class=\"action-card-name-reference\">Family Growth with Room Only</span> action.</div>",
+          "mini": false
+        },
+        {
+          "id": "D51_Archway",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "11",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [
+            "You cannot move a farmer from Archway to an occupied space, even if another card would otherwise allow you to treat that space as unoccupied. Exception: if you have played __Forest School__ (A028), you can move to an occupied __Lessons__ action space."
+          ],
+          "stats": [],
+          "actionCard": true,
+          "category": "FoodCategory",
+          "costText": "",
+          "costs": [
+            {
+              "clay": 2
+            }
+          ],
+          "deck": "D",
+          "desc": [
+            "This card is an action space for all. A player who uses it immediately gets 1 <FOOD>. Immediately before the returning home phase, they can use an unoccupied action space with the person from this card."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": true,
+          "animalHolder": false,
+          "name": "Archway",
+          "numbering": "D051",
+          "players": null,
+          "prerequisite": "No Occupations",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "minor",
+          "usedText": null,
+          "vp": 4,
+          "description": "<div>This card is an action space for all. A player who uses it immediately gets 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div>. Immediately before the returning home phase, they can use an unoccupied action space with the person from this card.</div>",
+          "mini": false
+        },
+        {
+          "id": "B66_SackCart",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "12",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "CropCategory",
+          "costText": "",
+          "costs": [
+            {
+              "wood": 2
+            }
+          ],
+          "deck": "B",
+          "desc": [
+            "Place 1 <GRAIN> each on the remaining spaces for rounds 5, 8, 11, and 14. At the start of these rounds, you get the <GRAIN>."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Sack Cart",
+          "numbering": "B066",
+          "passing": false,
+          "players": null,
+          "prerequisite": "2 Occupations",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "minor",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>Place 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-grain\">\n        </div>\n      </div> each on the remaining spaces for rounds 5, 8, 11, and 14. At the start of these rounds, you get the <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-grain\">\n        </div>\n      </div>.</div>",
+          "mini": false
+        },
+        {
+          "id": "B80_HardPorcelain",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "14",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "ResourceCategory",
+          "costText": "",
+          "costs": [
+            {
+              "clay": 1
+            }
+          ],
+          "deck": "B",
+          "desc": [
+            "At any time, you can exchange 2/3/4 <CLAY> for 1/2/3 <STONE>."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Hard Porcelain",
+          "numbering": "B080",
+          "passing": false,
+          "players": null,
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "minor",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>At any time, you can exchange 2/3/4 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div> for 1/2/3 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div>.</div>",
+          "mini": false
+        },
+        {
+          "id": "E36_HerbalGarden",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "15",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "BONUS_POINTS_-_GET",
+          "costText": "",
+          "costs": [
+            {
+              "wood": 1
+            }
+          ],
+          "deck": "E",
+          "desc": [
+            "From now on, at least one of your pastures must contain no animals."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Herbal Garden",
+          "numbering": "E036",
+          "passing": false,
+          "players": null,
+          "prerequisite": "1 Pasture",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "minor",
+          "usedText": null,
+          "vp": 2,
+          "description": "<div>From now on, at least one of your pastures must contain no animals.</div>",
+          "mini": false
+        },
+        {
+          "id": "A5_ClayEmbankment",
+          "location": "hand",
+          "pId": 94800135,
+          "state": "16",
+          "bonusVp": "",
+          "infobox": null,
+          "marked": false,
+          "rulings": [],
+          "stats": [],
+          "actionCard": false,
+          "category": "ResourceCategory",
+          "costText": "",
+          "costs": [
+            {
+              "food": 1
+            }
+          ],
+          "deck": "A",
+          "desc": [
+            "You immediately get 1 <CLAY> for every 2 <CLAY> you already have in your supply."
+          ],
+          "extraVp": false,
+          "fee": null,
+          "field": false,
+          "holder": false,
+          "animalHolder": false,
+          "name": "Clay Embankment",
+          "numbering": "A005",
+          "passing": true,
+          "players": null,
+          "prerequisite": "",
+          "sharedScoring": false,
+          "tooltip": [],
+          "type": "minor",
+          "usedText": null,
+          "vp": 0,
+          "description": "<div>You immediately get 1 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div> for every 2 <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div> you already have in your supply.</div>",
+          "mini": false
+        }
+      ],
+      "harvestCost": 10,
+      "personalOwned": {
+        "farmer": 5,
+        "fence": 15,
+        "stable": 4
+      },
+      "ack": "wait"
+    }
+  },
+  "scores": {
+    "84298950": {
+      "total": 45,
+      "fields": {
+        "total": 4,
+        "entries": [
+          {
+            "score": 4,
+            "quantity": 5
+          }
+        ]
+      },
+      "pastures": {
+        "total": 4,
+        "entries": [
+          {
+            "score": 4,
+            "quantity": 5
+          }
+        ]
+      },
+      "grains": {
+        "total": 3,
+        "entries": [
+          {
+            "score": 3,
+            "quantity": 7
+          }
+        ]
+      },
+      "vegetables": {
+        "total": 3,
+        "entries": [
+          {
+            "score": 3,
+            "quantity": 3
+          }
+        ]
+      },
+      "sheeps": {
+        "total": 2,
+        "entries": [
+          {
+            "score": 2,
+            "quantity": 4
+          }
+        ]
+      },
+      "pigs": {
+        "total": 2,
+        "entries": [
+          {
+            "score": 2,
+            "quantity": 3
+          }
+        ]
+      },
+      "cattles": {
+        "total": 2,
+        "entries": [
+          {
+            "score": 2,
+            "quantity": 3
+          }
+        ]
+      },
+      "empty": {
+        "total": 0,
+        "entries": [
+          {
+            "score": 0,
+            "quantity": 0
+          }
+        ]
+      },
+      "stables": {
+        "total": 0,
+        "entries": [
+          {
+            "score": 0,
+            "quantity": 0
+          }
+        ]
+      },
+      "clayRooms": {
+        "total": 5,
+        "entries": [
+          {
+            "score": 5,
+            "quantity": 5
+          }
+        ]
+      },
+      "stoneRooms": {
+        "total": 0,
+        "entries": [
+          {
+            "score": 0,
+            "quantity": 0
+          }
+        ]
+      },
+      "farmers": {
+        "total": 15,
+        "entries": [
+          {
+            "score": 15,
+            "quantity": 5
+          }
+        ]
+      },
+      "cards": {
+        "total": 4,
+        "entries": [
+          {
+            "score": 1,
+            "source": "Canoe"
+          },
+          {
+            "score": 1,
+            "source": "Loom"
+          },
+          {
+            "score": 1,
+            "source": "Waterlily Pond"
+          },
+          {
+            "score": 1,
+            "source": "Fireplace"
+          }
+        ]
+      },
+      "cardsBonus": {
+        "total": 1,
+        "entries": [
+          {
+            "score": 1,
+            "source": "Loom"
+          }
+        ]
+      },
+      "beggings": {
+        "total": 0,
+        "entries": [
+          {
+            "score": 0,
+            "quantity": 0
+          }
+        ]
+      }
+    },
+    "94800135": {
+      "total": 18,
+      "fields": {
+        "total": 2,
+        "entries": [
+          {
+            "score": 2,
+            "quantity": 3
+          }
+        ]
+      },
+      "pastures": {
+        "total": -1,
+        "entries": [
+          {
+            "score": -1,
+            "quantity": 0
+          }
+        ]
+      },
+      "grains": {
+        "total": 3,
+        "entries": [
+          {
+            "score": 3,
+            "quantity": 6
+          }
+        ]
+      },
+      "vegetables": {
+        "total": -1,
+        "entries": [
+          {
+            "score": -1,
+            "quantity": 0
+          }
+        ]
+      },
+      "sheeps": {
+        "total": 1,
+        "entries": [
+          {
+            "score": 1,
+            "quantity": 1
+          }
+        ]
+      },
+      "pigs": {
+        "total": 2,
+        "entries": [
+          {
+            "score": 2,
+            "quantity": 4
+          }
+        ]
+      },
+      "cattles": {
+        "total": -1,
+        "entries": [
+          {
+            "score": -1,
+            "quantity": 0
+          }
+        ]
+      },
+      "empty": {
+        "total": -4,
+        "entries": [
+          {
+            "score": -4,
+            "quantity": 4
+          }
+        ]
+      },
+      "stables": {
+        "total": 0,
+        "entries": [
+          {
+            "score": 0,
+            "quantity": 0
+          }
+        ]
+      },
+      "clayRooms": {
+        "total": 4,
+        "entries": [
+          {
+            "score": 4,
+            "quantity": 4
+          }
+        ]
+      },
+      "stoneRooms": {
+        "total": 0,
+        "entries": [
+          {
+            "score": 0,
+            "quantity": 0
+          }
+        ]
+      },
+      "farmers": {
+        "total": 15,
+        "entries": [
+          {
+            "score": 15,
+            "quantity": 5
+          }
+        ]
+      },
+      "cards": {
+        "total": 4,
+        "entries": [
+          {
+            "score": 1,
+            "source": "Hutch"
+          },
+          {
+            "score": 2,
+            "source": "Clay Oven"
+          },
+          {
+            "score": 1,
+            "source": "Cooking Hearth"
+          }
+        ]
+      },
+      "cardsBonus": {
+        "total": 0,
+        "entries": []
+      },
+      "beggings": {
+        "total": -6,
+        "entries": [
+          {
+            "score": -6,
+            "quantity": 2
+          }
+        ]
+      }
+    }
+  },
+  "meeples": [
+    {
+      "id": 107,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "begging",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 108,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "begging",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 241,
+      "location": "board",
+      "pId": "84298950",
+      "type": "cattle",
+      "x": "9",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 252,
+      "location": "board",
+      "pId": "84298950",
+      "type": "cattle",
+      "x": "9",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 262,
+      "location": "ActionCattleMarket",
+      "pId": "0",
+      "type": "cattle",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 296,
+      "location": "ActionCattleMarket",
+      "pId": "0",
+      "type": "cattle",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 140,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 163,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 183,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 207,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 234,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 255,
+      "location": "ActionClayPit",
+      "pId": "0",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 289,
+      "location": "ActionClayPit",
+      "pId": "0",
+      "type": "clay",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 49,
+      "location": "ActionCultivation",
+      "pId": "84298950",
+      "type": "farmer",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 50,
+      "location": "ActionHouseRedevelopment",
+      "pId": "84298950",
+      "type": "farmer",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 51,
+      "location": "board",
+      "pId": "84298950",
+      "type": "farmer",
+      "x": "1",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 52,
+      "location": "board",
+      "pId": "84298950",
+      "type": "farmer",
+      "x": "1",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 53,
+      "location": "board",
+      "pId": "84298950",
+      "type": "farmer",
+      "x": "1",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 54,
+      "location": "ActionUrgentWishChildren",
+      "pId": "94800135",
+      "type": "farmer",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 55,
+      "location": "board",
+      "pId": "94800135",
+      "type": "farmer",
+      "x": "1",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 57,
+      "location": "board",
+      "pId": "94800135",
+      "type": "farmer",
+      "x": "1",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 58,
+      "location": "board",
+      "pId": "94800135",
+      "type": "farmer",
+      "x": "1",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 6,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "6",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 7,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "7",
+      "y": "0",
+      "state": "0"
+    },
+    {
+      "id": 8,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "9",
+      "y": "0",
+      "state": "0"
+    },
+    {
+      "id": 9,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "10",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 10,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "10",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 11,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "9",
+      "y": "4",
+      "state": "0"
+    },
+    {
+      "id": 12,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "7",
+      "y": "4",
+      "state": "0"
+    },
+    {
+      "id": 13,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "6",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 14,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "8",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 15,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "8",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 16,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "7",
+      "y": "2",
+      "state": "0"
+    },
+    {
+      "id": 17,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "5",
+      "y": "2",
+      "state": "0"
+    },
+    {
+      "id": 18,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "4",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 19,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "5",
+      "y": "4",
+      "state": "0"
+    },
+    {
+      "id": 20,
+      "location": "board",
+      "pId": "84298950",
+      "type": "fence",
+      "x": "9",
+      "y": "2",
+      "state": "0"
+    },
+    {
+      "id": 30,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 31,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 32,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 33,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 34,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 35,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 36,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 37,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 38,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 39,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 40,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 41,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 42,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 43,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 44,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "fence",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 176,
+      "location": "board",
+      "pId": "94800135",
+      "type": "field",
+      "x": "9",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 196,
+      "location": "board",
+      "pId": "94800135",
+      "type": "field",
+      "x": "9",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 228,
+      "location": "board",
+      "pId": "84298950",
+      "type": "field",
+      "x": "9",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 267,
+      "location": "board",
+      "pId": "84298950",
+      "type": "field",
+      "x": "7",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 272,
+      "location": "board",
+      "pId": "94800135",
+      "type": "field",
+      "x": "9",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 302,
+      "location": "board",
+      "pId": "84298950",
+      "type": "field",
+      "x": "5",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 3,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "firstPlayer",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 205,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 206,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 224,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 225,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 226,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 227,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 257,
+      "location": "ActionFishing",
+      "pId": "0",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 275,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 276,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 277,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 279,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 284,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 285,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 286,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 287,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 288,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 291,
+      "location": "ActionFishing",
+      "pId": "0",
+      "type": "food",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 136,
+      "location": "board",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "9",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 137,
+      "location": "board",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "7",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 138,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "D67_ReapHook",
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 202,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "grain",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 268,
+      "location": "board",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "9",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 269,
+      "location": "board",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "9",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 270,
+      "location": "board",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "7",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 271,
+      "location": "board",
+      "pId": "84298950",
+      "type": "grain",
+      "x": "7",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 278,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "grain",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 190,
+      "location": "board",
+      "pId": "94800135",
+      "type": "pig",
+      "x": "3",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 215,
+      "location": "board",
+      "pId": "94800135",
+      "type": "pig",
+      "x": "1",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 243,
+      "location": "board",
+      "pId": "84298950",
+      "type": "pig",
+      "x": "5",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 254,
+      "location": "board",
+      "pId": "94800135",
+      "type": "pig",
+      "x": "5",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 264,
+      "location": "board",
+      "pId": "84298950",
+      "type": "pig",
+      "x": "5",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 298,
+      "location": "ActionPigMarket",
+      "pId": "0",
+      "type": "pig",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 194,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "reed",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 240,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "reed",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 248,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "reed",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 261,
+      "location": "ActionReedBank",
+      "pId": "0",
+      "type": "reed",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 295,
+      "location": "ActionReedBank",
+      "pId": "0",
+      "type": "reed",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 280,
+      "location": "board",
+      "pId": "94800135",
+      "type": "roomClay",
+      "x": "1",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 281,
+      "location": "board",
+      "pId": "94800135",
+      "type": "roomClay",
+      "x": "1",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 282,
+      "location": "board",
+      "pId": "94800135",
+      "type": "roomClay",
+      "x": "1",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 283,
+      "location": "board",
+      "pId": "94800135",
+      "type": "roomClay",
+      "x": "3",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 304,
+      "location": "board",
+      "pId": "84298950",
+      "type": "roomClay",
+      "x": "1",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 305,
+      "location": "board",
+      "pId": "84298950",
+      "type": "roomClay",
+      "x": "1",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 306,
+      "location": "board",
+      "pId": "84298950",
+      "type": "roomClay",
+      "x": "1",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 307,
+      "location": "board",
+      "pId": "84298950",
+      "type": "roomClay",
+      "x": "3",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 308,
+      "location": "board",
+      "pId": "84298950",
+      "type": "roomClay",
+      "x": "5",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 132,
+      "location": "board",
+      "pId": "94800135",
+      "type": "sheep",
+      "x": "7",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 170,
+      "location": "board",
+      "pId": "84298950",
+      "type": "sheep",
+      "x": "7",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 191,
+      "location": "board",
+      "pId": "84298950",
+      "type": "sheep",
+      "x": "7",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 216,
+      "location": "board",
+      "pId": "84298950",
+      "type": "sheep",
+      "x": "7",
+      "y": "1",
+      "state": "0"
+    },
+    {
+      "id": 244,
+      "location": "ActionSheepMarket",
+      "pId": "0",
+      "type": "sheep",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 251,
+      "location": "board",
+      "pId": "84298950",
+      "type": "sheep",
+      "x": "7",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 253,
+      "location": "board",
+      "pId": "94800135",
+      "type": "sheep",
+      "x": "7",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 265,
+      "location": "ActionSheepMarket",
+      "pId": "0",
+      "type": "sheep",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 299,
+      "location": "ActionSheepMarket",
+      "pId": "0",
+      "type": "sheep",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 21,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stable",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 22,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stable",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 23,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stable",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 24,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stable",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 45,
+      "location": "board",
+      "pId": "94800135",
+      "type": "stable",
+      "x": "7",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 46,
+      "location": "board",
+      "pId": "94800135",
+      "type": "stable",
+      "x": "5",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 47,
+      "location": "board",
+      "pId": "94800135",
+      "type": "stable",
+      "x": "3",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 48,
+      "location": "board",
+      "pId": "94800135",
+      "type": "stable",
+      "x": "7",
+      "y": "3",
+      "state": "0"
+    },
+    {
+      "id": 117,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 133,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 148,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 161,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": "B125_EstateWorker",
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 171,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 192,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 217,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 232,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 242,
+      "location": "ActionEasternQuarry",
+      "pId": "0",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 263,
+      "location": "ActionEasternQuarry",
+      "pId": "0",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 266,
+      "location": "reserve",
+      "pId": "94800135",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 297,
+      "location": "ActionEasternQuarry",
+      "pId": "0",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 300,
+      "location": "ActionWesternQuarry",
+      "pId": "0",
+      "type": "stone",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 301,
+      "location": "board",
+      "pId": "84298950",
+      "type": "vegetable",
+      "x": "5",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 303,
+      "location": "board",
+      "pId": "84298950",
+      "type": "vegetable",
+      "x": "5",
+      "y": "5",
+      "state": "0"
+    },
+    {
+      "id": 208,
+      "location": "ActionCopseAdd",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 235,
+      "location": "ActionCopseAdd",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 256,
+      "location": "ActionCopseAdd",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 273,
+      "location": "reserve",
+      "pId": "84298950",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 290,
+      "location": "ActionCopseAdd",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 292,
+      "location": "ActionForest",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 293,
+      "location": "ActionForest",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 294,
+      "location": "ActionForest",
+      "pId": "0",
+      "type": "wood",
+      "x": null,
+      "y": null,
+      "state": "0"
+    },
+    {
+      "id": 56,
+      "location": "ActionUrgentWishChildren",
+      "pId": "94800135",
+      "type": "farmer",
+      "x": null,
+      "y": null,
+      "state": "1"
+    }
+  ],
+  "cards": {
+    "visible": [
+      {
+        "id": "ActionAnimalMarketAdd",
+        "pId": null,
+        "name": "Animal market",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Choose one: receive 1 sheep and 1 food, or receive 1 wild boar, or buy 1 cattle for 1 food"
+        ],
+        "component": true,
+        "container": "add",
+        "desc": [
+          "+1<SHEEP> +1<FOOD>",
+          "+1<PIG>",
+          "+1<CATTLE> -1<FOOD>"
+        ],
+        "tooltipDesc": [
+          "+1<SHEEP> +1<FOOD>",
+          "+1<PIG>",
+          "+1<CATTLE> -1<FOOD>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sheep\">\n        </div>\n      </div> +1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div><div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-pig\">\n        </div>\n      </div></div><div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-cattle\">\n        </div>\n      </div> -1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>",
+        "tooltipText": "Choose one: receive 1 sheep and 1 food, or receive 1 wild boar, or buy 1 cattle for 1 food",
+        "tooltipDescription": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sheep\">\n        </div>\n      </div> +1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div><div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-pig\">\n        </div>\n      </div></div><div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-cattle\">\n        </div>\n      </div> -1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionClayPit",
+        "pId": null,
+        "name": "Clay Pit",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 clay each turn"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "1<CLAY>"
+        ],
+        "tooltipDesc": [
+          "1<CLAY>"
+        ],
+        "size": "s",
+        "accumulate": "right",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 clay each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionCopseAdd",
+        "pId": null,
+        "name": "Copse",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 wood each turn"
+        ],
+        "component": true,
+        "container": "add",
+        "desc": [
+          "1<WOOD>"
+        ],
+        "tooltipDesc": [
+          "1<WOOD>"
+        ],
+        "size": "s",
+        "accumulate": "right",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 wood each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionDayLaborer",
+        "pId": null,
+        "name": "Day Laborer",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Gain 2 food"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "+2<FOOD>"
+        ],
+        "tooltipDesc": [
+          "+2<FOOD>"
+        ],
+        "size": "m",
+        "accumulate": "left",
+        "description": "<div>+2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>",
+        "tooltipText": "Gain 2 food",
+        "tooltipDescription": "<div>+2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionFarmExpansion",
+        "pId": null,
+        "name": "Farm Expansion",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "You can build as many rooms and/or stables as you want. You are allowed to only build rooms or only build stables.",
+          "Each new room must be orthogonally adjacent to an existing one. (There is no such restriction for stables.)",
+          "You can only build one stable per farmyard space."
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "5<WOOD>2<REED><ARROW><ROOM_WOOD>",
+          "5<CLAY>2<REED><ARROW><ROOM_CLAY>",
+          "5<STONE>2<REED><ARROW><ROOM_STONE>",
+          "+",
+          "2<WOOD> <ARROW> <BARN>"
+        ],
+        "tooltipDesc": [
+          "[Build rooms]",
+          "5<WOOD>2<REED><ARROW><ROOM_WOOD>",
+          "5<CLAY>2<REED><ARROW><ROOM_CLAY>",
+          "5<STONE>2<REED><ARROW><ROOM_STONE>",
+          "[and/or]",
+          "2<WOOD> <ARROW> <BARN>"
+        ],
+        "size": "m",
+        "accumulate": "left",
+        "description": "<div>5<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-room_wood\">\n        </div>\n      </div></div><div>5<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-room_clay\">\n        </div>\n      </div></div><div>5<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-room_stone\">\n        </div>\n      </div></div><div>+</div><div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-barn\">\n        </div>\n      </div></div>",
+        "tooltipText": "You can build as many rooms and/or stables as you want. You are allowed to only build rooms or only build stables.<br />Each new room must be orthogonally adjacent to an existing one. (There is no such restriction for stables.)<br />You can only build one stable per farmyard space.",
+        "tooltipDescription": "<div><span class=\"text\">Build rooms</span></div><div>5<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-room_wood\">\n        </div>\n      </div></div><div>5<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-clay\">\n        </div>\n      </div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-room_clay\">\n        </div>\n      </div></div><div>5<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-room_stone\">\n        </div>\n      </div></div><div><span class=\"text\">and/or</span></div><div>2<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-barn\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionFarmland",
+        "pId": null,
+        "name": "Farmland",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "You can plow one field"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "<FIELD>"
+        ],
+        "tooltipDesc": [
+          "[Plow a field]",
+          "<FIELD>"
+        ],
+        "size": "m",
+        "accumulate": "left",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-field_icon\">\n        </div>\n      </div></div>",
+        "tooltipText": "You can plow one field",
+        "tooltipDescription": "<div><span class=\"text\">Plow a field</span></div><div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-field_icon\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionFishing",
+        "pId": null,
+        "name": "Fishing",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 food each turn"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "1<FOOD>"
+        ],
+        "tooltipDesc": [
+          "1<FOOD>"
+        ],
+        "size": "s",
+        "accumulate": "right",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 food each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionForest",
+        "pId": null,
+        "name": "Forest",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 3 wood each turn"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "3<WOOD>"
+        ],
+        "tooltipDesc": [
+          "3<WOOD>"
+        ],
+        "size": "s",
+        "accumulate": "left",
+        "description": "<div>3<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 3 wood each round",
+        "tooltipDescription": "<div>3<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionGrainSeeds",
+        "pId": null,
+        "name": "Grain Seeds",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Gain 1 grain"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "+1<GRAIN>"
+        ],
+        "tooltipDesc": [
+          "+1<GRAIN>"
+        ],
+        "size": "m",
+        "accumulate": "left",
+        "description": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-grain\">\n        </div>\n      </div></div>",
+        "tooltipText": "Gain 1 grain",
+        "tooltipDescription": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-grain\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionLessons",
+        "pId": null,
+        "name": "Lessons",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Play exactly one occupation card from your hand",
+          "* The first occupation you play in the game is free"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "[Pay] 1<FOOD>*",
+          "1<OCCUPATION>"
+        ],
+        "tooltipDesc": [
+          "[Pay 1] <FOOD>*",
+          "1<OCCUPATION>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div><span class=\"text\">Pay</span> 1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div>*</div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-occupation\">\n        </div>\n      </div></div>",
+        "tooltipText": "Play exactly one occupation card from your hand<br />* The first occupation you play in the game is free",
+        "tooltipDescription": "<div><span class=\"text\">Pay 1</span> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div>*</div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-occupation\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionMeetingPlace",
+        "pId": null,
+        "name": "Meeting place",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "From that moment, you are considered the “starting player” (even though another player started the current round).",
+          "Additionally, you can play exactly one minor improvement from your hand"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "<FIRST> + 1<MINOR>"
+        ],
+        "tooltipDesc": [
+          "<FIRST>",
+          "and/or",
+          "1<MINOR>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-first\">\n        </div>\n      </div> + 1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>",
+        "tooltipText": "From that moment, you are considered the “starting player” (even though another player started the current round).<br />Additionally, you can play exactly one minor improvement from your hand",
+        "tooltipDescription": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-first\">\n        </div>\n      </div></div><div>and/or</div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionReedBank",
+        "pId": null,
+        "name": "Reed Bank",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 reed each turn"
+        ],
+        "component": true,
+        "container": "central",
+        "desc": [
+          "1<REED>"
+        ],
+        "tooltipDesc": [
+          "1<REED>"
+        ],
+        "size": "s",
+        "accumulate": "left",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 reed each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-reed\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionResourceMarketAdd",
+        "pId": null,
+        "name": "Resource Market",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "Gain 1 stone and 1 food"
+        ],
+        "component": true,
+        "container": "add",
+        "desc": [
+          "+1<STONE>+1<FOOD>"
+        ],
+        "tooltipDesc": [
+          "+1<STONE>+1<FOOD>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>",
+        "tooltipText": "Gain 1 stone and 1 food",
+        "tooltipDescription": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-food\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionWishChildrenAdd",
+        "pId": null,
+        "name": "Wish for Children",
+        "location": "board",
+        "state": "1",
+        "tooltip": [
+          "From round 5 (inclusive), you can grow your family on this action space, provided you have enough room."
+        ],
+        "component": true,
+        "container": "add",
+        "desc": [
+          "<CHILD>"
+        ],
+        "tooltipDesc": [
+          "<CHILD>"
+        ],
+        "size": "s",
+        "accumulate": "",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-child\">\n        </div>\n      </div></div>",
+        "tooltipText": "From round 5 (inclusive), you can grow your family on this action space, provided you have enough room.",
+        "tooltipDescription": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-child\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionCattleMarket",
+        "pId": null,
+        "name": "Cattle Market",
+        "location": "turn_10",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 cattle each turn"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<CATTLE>"
+        ],
+        "tooltipDesc": [
+          "1<CATTLE>"
+        ],
+        "size": "m",
+        "accumulate": "bottom",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-cattle\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 cattle each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-cattle\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionCultivation",
+        "pId": null,
+        "name": "Cultivation",
+        "location": "turn_12",
+        "state": "1",
+        "tooltip": [
+          "You can plow one field and then immediately sow grain or vegetables in all of your empty fields, including the one you just plowed"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "<FIELD> + <SOW>"
+        ],
+        "tooltipDesc": [
+          "[Plow a field]",
+          "<FIELD>",
+          "[and/or]",
+          "[Sow]",
+          "<SOW>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-field_icon\">\n        </div>\n      </div> + <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sow\">\n        </div>\n      </div></div>",
+        "tooltipText": "You can plow one field and then immediately sow grain or vegetables in all of your empty fields, including the one you just plowed",
+        "tooltipDescription": "<div><span class=\"text\">Plow a field</span></div><div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-field_icon\">\n        </div>\n      </div></div><div><span class=\"text\">and/or</span></div><div><span class=\"text\">Sow</span></div><div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sow\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionEasternQuarry",
+        "pId": null,
+        "name": "Eastern Quarry",
+        "location": "turn_11",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 stone each turn"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<STONE>"
+        ],
+        "tooltipDesc": [
+          "1<STONE>"
+        ],
+        "size": "m",
+        "accumulate": "bottom",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 stone each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionFencing",
+        "pId": null,
+        "name": "Fencing",
+        "location": "turn_1",
+        "state": "1",
+        "tooltip": [
+          "You can build any number of fences, paying 1 wood for each new fence you build.",
+          "You are allowed to fence a stable or divide an existing pasture in several smaller ones by building fences on the fence spaces inside the pasture."
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<WOOD><ARROW><FENCE>"
+        ],
+        "tooltipDesc": [
+          "[Build fences]",
+          "1<WOOD><ARROW><FENCE>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-fence_icon\">\n        </div>\n      </div></div>",
+        "tooltipText": "You can build any number of fences, paying 1 wood for each new fence you build.<br />You are allowed to fence a stable or divide an existing pasture in several smaller ones by building fences on the fence spaces inside the pasture.",
+        "tooltipDescription": "<div><span class=\"text\">Build fences</span></div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-wood\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-arrow\">\n        </div>\n      </div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-fence_icon\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionGrainUtilization",
+        "pId": null,
+        "name": "Grain Utilization",
+        "location": "turn_3",
+        "state": "1",
+        "tooltip": [
+          "How to sow is explained on page 9 of the rule book.",
+          "\"Baking bread\" (see page 10 of the rule book) means turning grain in your supply (and not from your fields) into 2 and 3 food using a Fireplace and Cooking Hearth, respectively.",
+          "Various oven improvements allow you to turn your grain into even more food"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "<SOW> + <BREAD>"
+        ],
+        "tooltipDesc": [
+          "[Sow]",
+          "<SOW>",
+          "[and/or]",
+          "[Bake bread]",
+          "<BREAD>"
+        ],
+        "size": "m",
+        "accumulate": "left",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sow\">\n        </div>\n      </div> + <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-bread\">\n        </div>\n      </div></div>",
+        "tooltipText": "How to sow is explained on page 9 of the rule book.<br />\"Baking bread\" (see page 10 of the rule book) means turning grain in your supply (and not from your fields) into 2 and 3 food using a Fireplace and Cooking Hearth, respectively.<br />Various oven improvements allow you to turn your grain into even more food",
+        "tooltipDescription": "<div><span class=\"text\">Sow</span></div><div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sow\">\n        </div>\n      </div></div><div><span class=\"text\">and/or</span></div><div><span class=\"text\">Bake bread</span></div><div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-bread\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionHouseRedevelopment",
+        "pId": null,
+        "name": "House Redevelopment",
+        "location": "turn_7",
+        "state": "1",
+        "tooltip": [
+          "You may only build a major improvement or play a minor improvement if you renovate first.",
+          "You are not allowed to renovate your house twice in a single action."
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "<UPGRADE>",
+          "[▷] 1<MAJOR>/<MINOR>"
+        ],
+        "tooltipDesc": [
+          "[Renovation]",
+          "<UPGRADE>",
+          "[then]",
+          "1<MAJOR>/<MINOR>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-upgrade\">\n        </div>\n      </div></div><div><span class=\"text\">▷</span> 1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-major\">\n        </div>\n      </div>/<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>",
+        "tooltipText": "You may only build a major improvement or play a minor improvement if you renovate first.<br />You are not allowed to renovate your house twice in a single action.",
+        "tooltipDescription": "<div><span class=\"text\">Renovation</span></div><div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-upgrade\">\n        </div>\n      </div></div><div><span class=\"text\">then</span></div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-major\">\n        </div>\n      </div>/<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionMajorImprovement",
+        "pId": null,
+        "name": "Improvements",
+        "location": "turn_4",
+        "state": "1",
+        "tooltip": [
+          "You can either build 1 major improvement or play 1 minor improvement"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<MAJOR>/<MINOR>"
+        ],
+        "tooltipDesc": [
+          "[Build 1 major improvement or play 1 minor improvement]",
+          "1<MAJOR>/<MINOR>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-major\">\n        </div>\n      </div>/<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>",
+        "tooltipText": "You can either build 1 major improvement or play 1 minor improvement",
+        "tooltipDescription": "<div><span class=\"text\">Build 1 major improvement or play 1 minor improvement</span></div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-major\">\n        </div>\n      </div>/<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionPigMarket",
+        "pId": null,
+        "name": "Pig Market",
+        "location": "turn_9",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 wild boar each turn"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<PIG>"
+        ],
+        "tooltipDesc": [
+          "1<PIG>"
+        ],
+        "size": "m",
+        "accumulate": "bottom",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-pig\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 wild boar each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-pig\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionSheepMarket",
+        "pId": null,
+        "name": "Sheep Market",
+        "location": "turn_2",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 sheep each turn"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<SHEEP>"
+        ],
+        "tooltipDesc": [
+          "1<SHEEP>"
+        ],
+        "size": "m",
+        "accumulate": "bottom",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sheep\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 sheep each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-sheep\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionUrgentWishChildren",
+        "pId": null,
+        "name": "Urgent Wish for Children",
+        "location": "turn_13",
+        "state": "1",
+        "tooltip": [
+          "The number of rooms in your house does not matter for this effect.",
+          "Note: If you grow your family on this space and build a single room later, you will not be able to use “Basic Wish for Children”.",
+          "The new room is immediately occupied by the person who did not have a room of their own yet."
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "<CHILD_FREE>"
+        ],
+        "tooltipDesc": [
+          "{{ <CHILD_FREE> [Growth without room] }}"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-child_free\">\n        </div>\n      </div></div>",
+        "tooltipText": "The number of rooms in your house does not matter for this effect.<br />Note: If you grow your family on this space and build a single room later, you will not be able to use “Basic Wish for Children”.<br />The new room is immediately occupied by the person who did not have a room of their own yet.",
+        "tooltipDescription": "<div><div class=\"text-wrapper\"> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-child_free\">\n        </div>\n      </div> <span class=\"text\">Growth without room</span> </div></div>"
+      },
+      {
+        "id": "ActionVegetableSeeds",
+        "pId": null,
+        "name": "Vegetable Seeds",
+        "location": "turn_8",
+        "state": "1",
+        "tooltip": [
+          "Gain 1 vegetable"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "+1<VEGETABLE>"
+        ],
+        "tooltipDesc": [
+          "+1<VEGETABLE>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-vegetable\">\n        </div>\n      </div></div>",
+        "tooltipText": "Gain 1 vegetable",
+        "tooltipDescription": "<div>+1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-vegetable\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionWesternQuarry",
+        "pId": null,
+        "name": "Western Quarry",
+        "location": "turn_5",
+        "state": "1",
+        "tooltip": [
+          "Accumulate 1 stone each turn"
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "1<STONE>"
+        ],
+        "tooltipDesc": [
+          "1<STONE>"
+        ],
+        "size": "m",
+        "accumulate": "bottom",
+        "description": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div></div>",
+        "tooltipText": "Accumulate 1 stone each round",
+        "tooltipDescription": "<div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-stone\">\n        </div>\n      </div></div>"
+      },
+      {
+        "id": "ActionWishChildren",
+        "pId": null,
+        "name": "Wish for Children",
+        "location": "turn_6",
+        "state": "1",
+        "tooltip": [
+          "You can only use this action space to grow your family if you currently have more rooms than people, regardless of whether these people are still at home or on action spaces.",
+          "You may not skip the family growth only to play a minor improvement."
+        ],
+        "component": false,
+        "container": "central",
+        "desc": [
+          "<CHILD> [▷] 1<MINOR>"
+        ],
+        "tooltipDesc": [
+          "{{ <CHILD> [Growth with room only] }}",
+          "[then]",
+          "1<MINOR>"
+        ],
+        "size": "m",
+        "accumulate": "",
+        "description": "<div><div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-child\">\n        </div>\n      </div> <span class=\"text\">▷</span> 1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>",
+        "tooltipText": "You can only use this action space to grow your family if you currently have more rooms than people, regardless of whether these people are still at home or on action spaces.<br />You may not skip the family growth only to play a minor improvement.",
+        "tooltipDescription": "<div><div class=\"text-wrapper\"> <div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-child\">\n        </div>\n      </div> <span class=\"text\">Growth with room only</span> </div></div><div><span class=\"text\">then</span></div><div>1<div class=\"meeple-container\">\n        <div class=\"agricola-meeple meeple-minor\">\n        </div>\n      </div></div>"
+      }
+    ]
+  }
+}

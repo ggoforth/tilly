@@ -110,6 +110,75 @@ test('placedFarmersThisRound is empty before any placement', () => {
   assert.deepEqual(r.briefing.me.placedFarmersThisRound, []);
 });
 
+// Developed-farm fixture: slimmed snapshot from observed game 853319280
+// event 1908 — player 84298950 has 5 plowed fields, 5 pastures, 15 fences.
+// This is the only fixture we have that exercises a developed farm; was
+// added when we discovered `farm.fields` had silently been 0 for every
+// game (the distiller was reading dropZones for fields, but BGA never
+// puts type='field' entries in dropZones — verified across all fixtures).
+const developedFarm = load('developed-farm.gamedatas.json');
+const DEV_FARM_ME = '84298950';
+
+test('developed farm: fields counted from scores.<pid>.fields.entries[0].quantity', () => {
+  // Regression for the "fields:0 when I had plenty" bug. Old code:
+  //   fields: zones.filter(z => z.type === 'field').length  // → always 0
+  // because BGA does not put plowed fields into board.dropZones. The
+  // authoritative count lives in gd.scores[pid].fields.entries[0].quantity.
+  const r = distill(developedFarm, DEV_FARM_ME);
+  assert.ok(r.ok, 'distill must succeed');
+  if (!r.ok) return;
+  assert.equal(
+    r.briefing.me.farm.fields,
+    5,
+    'developed-farm fixture has 5 plowed fields for pid 84298950',
+  );
+});
+
+test('developed farm: pastures counted from board.pastures array', () => {
+  // Regression: pastures were counted via dropZones.filter(z=>z.type==='pasture')
+  // which counts drop TARGETS, not built pastures. Switch to board.pastures
+  // (the canonical built-pasture array) so it's stable even when drop-zone
+  // semantics change between game states.
+  const r = distill(developedFarm, DEV_FARM_ME);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  assert.equal(r.briefing.me.farm.pastures, 5, 'developed-farm has 5 pastures');
+  assert.equal(r.briefing.me.farm.fencedSpaces, 15, 'developed-farm has 15 fence segments');
+});
+
+test('animal totals override stale meeples when liveResources is supplied', () => {
+  // Regression for the live R11 bug: user had 2 sheep on the farm board
+  // but the briefing said sh0 because gd.meeples hadn't been re-snapshotted
+  // since the user placed them. The DOM counter (#resource_<pid>_sheep)
+  // reads 2 in that scenario — surfaced via liveResources, it must win.
+  const fakeGd: any = {
+    gamestate: {
+      id: 700, name: 'placeFarmer', active_player: ME,
+      possibleactions: ['actPlaceFarmer'],
+    },
+    players: { [ME]: { id: ME, name: 'me', resources: { sheep: 0 } } },
+    // Intentionally NO sheep meeples — simulating stale gamedatas where
+    // the meeples array hasn't been updated since the sheep were placed.
+    meeples: [
+      { id: 5, type: 'farmer', pId: ME, location: 'board', x: 1, y: 1 },
+    ],
+    cards: { visible: [] },
+    turn: 10,
+  };
+  const liveResources = new Map<string, Record<string, number>>([
+    [ME, { sheep: 2, pig: 0, cattle: 0 }],
+  ]);
+  const r = distill(fakeGd, ME, undefined, liveResources);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  assert.equal(
+    r.briefing.me.animals.sheep, 2,
+    'live DOM count (2) MUST win over stale gd.meeples (0)',
+  );
+  // unplaced clamped to [0, total] — meeples shows 0 in reserve, total is 2.
+  assert.equal(r.briefing.me.unplacedAnimals.sheep, 0);
+});
+
 test('animals = total owned (housed + supply); unplacedAnimals = supply only', () => {
   // Live R10 bug: stamp said sh0 p0 cat0 while user had 3 sheep housed in
   // rooms. The old `animals.sheep` came from the cache (supply only) so

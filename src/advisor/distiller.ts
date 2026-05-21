@@ -96,7 +96,7 @@ function numericRecord(o: unknown): Record<string, number> {
   return out;
 }
 
-function farmOf(player: Any): PlayerView['farm'] {
+function farmOf(player: Any, playerScores: Any): PlayerView['farm'] {
   const board = (player.board ?? {}) as Any;
   const zones: Any[] = Array.isArray(board.dropZones) ? board.dropZones : [];
   const roomZones = zones.filter((z) => z.type === 'room');
@@ -104,16 +104,38 @@ function farmOf(player: Any): PlayerView['farm'] {
     (n, z) => n + (Array.isArray(z.locations) ? z.locations.length : 0),
     0,
   );
-  const pastures = zones.filter((z) => z.type === 'pasture').length;
+  // Pastures: read the live `board.pastures` array (one entry per built
+  // pasture, with nested nodes/stables). The dropZones array also tends to
+  // carry `type='pasture'` entries that mirror this, but they represent
+  // drop TARGETS not built pastures — verified against the developed-farm
+  // fixture (5 built pastures = 5 pasture dropZones in that snapshot, but
+  // the relationship isn't guaranteed in earlier game states). board.pastures
+  // is the canonical source.
+  const pastures = Array.isArray(board.pastures) ? board.pastures.length : 0;
+  // Stables: BGA stores them nested inside dropZones (each `type='stable'`
+  // zone is a drop target; built stables live in z.stables on the relevant
+  // zones). Cross-checked against scores.<pid>.stables.entries[0].quantity:
+  // the midwork fixture has 2 type='stable' drop zones but 0 built stables,
+  // and z.stables is empty on each — the reduce correctly returns 0.
   const stables = zones.reduce(
     (n, z) => n + (Array.isArray(z.stables) ? z.stables.length : 0),
     0,
   );
   const fences = Array.isArray(board.fences) ? board.fences.length : 0;
+  // Fields: BGA does NOT include `type='field'` entries in dropZones — even
+  // in a developed-farm snapshot with 5 plowed fields, dropZones contains
+  // only room + pasture entries. The authoritative count lives at
+  // gd.scores[pid].fields.entries[0].quantity (live, updated as fields are
+  // plowed). Was previously read as `zones.filter(z=>z.type==='field')`
+  // which silently always returned 0 — undetected because no fixture
+  // exercised a developed farm. The developed-farm.gamedatas.json fixture
+  // now covers this regression.
+  const fields =
+    Number(playerScores?.fields?.entries?.[0]?.quantity) || 0;
   return {
     rooms,
     roomType: String(roomZones[0]?.roomType ?? player.color_back ?? 'wood'),
-    fields: zones.filter((z) => z.type === 'field').length,
+    fields,
     pastures,
     stables,
     fencedSpaces: fences,
@@ -223,7 +245,7 @@ function playerView(
       res[t] = cache[t] ?? 0;
     }
   }
-  const farm = farmOf(player);
+  const farm = farmOf(player, gd.scores?.[player.id]);
   const people = Array.isArray(gd.meeples)
     ? gd.meeples.filter(
         (m: Any) =>
@@ -250,28 +272,45 @@ function playerView(
   farm.canBuildRoom = matCount >= 5 && reed >= 2;
   farm.canBuildStable = wood >= 2;
   farm.canBuildFence = wood >= 1;
-  // Count meeples by animal type. `unplaced` = in supply, available to act
-  // on now (cook / trade / exchange). `total` = unplaced + housed on the
-  // farm board. Both surfaced so the LLM doesn't conflate "do you own sheep?"
-  // with "do you have sheep available to cook?".
-  const animalCount = (meepleType: 'sheep' | 'pig' | 'cattle', placedOnly: boolean) =>
+  // Animal totals. `total` = all animals the player owns (reserve + farm
+  // board); `unplaced` = in supply, available to act on now (cook / trade /
+  // exchange). Both surfaced so the LLM doesn't conflate "do you own
+  // sheep?" with "do you have sheep available to cook?".
+  //
+  // Live DOM counters (`#resource_<pid>_sheep` etc.) are the canonical
+  // source — BGA updates them synchronously from notif_* handlers, while
+  // gd.meeples is stale (verified: user reported 2 sheep on board, briefing
+  // line said `sh0` because all sheep meeples for that player still had
+  // location='reserve' or location='Sheep Market' in the gamedatas snapshot).
+  // Fall back to the meeple scan if liveResources missed this player
+  // (e.g. opponent panel not yet rendered).
+  const meepleAnimalCount = (
+    meepleType: 'sheep' | 'pig' | 'cattle',
+    placedOnly: boolean,
+  ): number =>
     Array.isArray(gd.meeples)
       ? gd.meeples.filter((m: Any) => {
           if (m?.type !== meepleType) return false;
           if (String(m.pId) !== String(player.id)) return false;
           if (placedOnly) return m.location === 'board';
-          // Total: in player's reserve OR on the farm board (excludes action-card piles).
           return m.location === 'reserve' || m.location === 'board';
         }).length
       : 0;
-  const totalSheep = animalCount('sheep', false);
-  const totalPig = animalCount('pig', false);
-  const totalCattle = animalCount('cattle', false);
-  // `unplaced` should match `res.sheep` etc. (DOM/cache) but derive from
-  // meeples-in-reserve for symmetry. If the two diverge we surface the
-  // meeple-derived one — it's the same source as `total`, so internally
-  // consistent.
-  const reserveAnimal = (t: 'sheep' | 'pig' | 'cattle') =>
+  const liveAnimal = (t: 'sheep' | 'pig' | 'cattle'): number | undefined => {
+    const v = live?.[t];
+    return typeof v === 'number' ? v : undefined;
+  };
+  const totalSheep = liveAnimal('sheep') ?? meepleAnimalCount('sheep', false);
+  const totalPig = liveAnimal('pig') ?? meepleAnimalCount('pig', false);
+  const totalCattle = liveAnimal('cattle') ?? meepleAnimalCount('cattle', false);
+  // `unplaced` = sheep in player's reserve (not yet placed on farm). Derived
+  // from meeples-with-location='reserve', which can be stale on the same
+  // notification beat where `total` (from live DOM) updates first. The
+  // clamp to [0, total] keeps the pair internally consistent: if the
+  // stale reserve count exceeds the fresh total, we cap it. This is a
+  // best-effort signal; the LLM should treat `total` as authoritative
+  // and `unplaced` as approximate.
+  const meepleReserve = (t: 'sheep' | 'pig' | 'cattle') =>
     Array.isArray(gd.meeples)
       ? gd.meeples.filter(
           (m: Any) =>
@@ -280,6 +319,10 @@ function playerView(
             m.location === 'reserve',
         ).length
       : 0;
+  const reserveAnimal = (
+    t: 'sheep' | 'pig' | 'cattle',
+    total: number,
+  ): number => Math.max(0, Math.min(meepleReserve(t), total));
   const view: PlayerView = {
     resources: res,
     animals: {
@@ -288,9 +331,9 @@ function playerView(
       cattle: totalCattle,
     },
     unplacedAnimals: {
-      sheep: reserveAnimal('sheep'),
-      boar: reserveAnimal('pig'),
-      cattle: reserveAnimal('cattle'),
+      sheep: reserveAnimal('sheep', totalSheep),
+      boar: reserveAnimal('pig', totalPig),
+      cattle: reserveAnimal('cattle', totalCattle),
     },
     farm,
     family: {
