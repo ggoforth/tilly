@@ -514,6 +514,86 @@ export type LiveAccumulatorMap = ReadonlyMap<string, Readonly<Record<string, num
  *  use" stockpile (cache), not the "built so far" tally (DOM). */
 const RESOURCE_TYPES_KEEP_CACHE: ReadonlySet<string> = new Set(['fence', 'stable']);
 
+/** Build a terse plain-English digest of the key briefing facts. Goes into
+ *  `briefing.summary` so the LLM gets a cheat sheet before parsing the
+ *  dense JSON. Counters known failure modes:
+ *   - re-recommending an already-placed action (explicit DO NOT line)
+ *   - missing the harvest shortfall (CAPS shortfall warning if food gap > 0)
+ *   - conflating `animals.boar` with `resources.pig` (resolves both to "pigs")
+ *   - sliding past `fields:0` mid-JSON (called out by name)
+ *
+ *  Pure function — given the same briefing, produces the same string. */
+export function buildBriefingSummary(b: PositionBriefing): string {
+  const turn = b.isMyTurn ? 'YOUR TURN' : 'opponent turn';
+  const f = b.me.farm;
+  const r = b.me.resources;
+  const a = b.me.animals;
+  const u = b.me.unplacedAnimals;
+  const fam = b.me.family;
+  const h = b.harvest;
+
+  const harvestLine = (() => {
+    if (h.roundsUntilHarvest === 0) {
+      const tail = h.foodShortfall > 0
+        ? `SHORTFALL of ${h.foodShortfall} food (have ${r.food ?? 0}, need ${h.foodNeededAtNextHarvest})`
+        : `covered (have ${r.food ?? 0}, need ${h.foodNeededAtNextHarvest})`;
+      return `Harvest THIS ROUND — ${tail}.`;
+    }
+    if (h.foodShortfall > 0) {
+      return `Harvest round ${h.nextHarvestRound} (${h.roundsUntilHarvest} away) — SHORTFALL of ${h.foodShortfall} food (have ${r.food ?? 0}, need ${h.foodNeededAtNextHarvest}).`;
+    }
+    return `Harvest round ${h.nextHarvestRound} (${h.roundsUntilHarvest} away) — food covered (${r.food ?? 0}/${h.foodNeededAtNextHarvest}).`;
+  })();
+
+  // Animals: surface housed + reserve explicitly. Uses "pigs" (not "boar") so
+  // it matches `resources.pig` naming — one less LLM reconciliation step.
+  // animals / unplacedAnimals are Record<string,number> — keys may be missing
+  // for animal types the player has never owned, so coalesce defensively.
+  const housed = (total: number, reserve: number) => Math.max(0, total - reserve);
+  const aSheep = a.sheep ?? 0, aBoar = a.boar ?? 0, aCattle = a.cattle ?? 0;
+  const uSheep = u.sheep ?? 0, uBoar = u.boar ?? 0, uCattle = u.cattle ?? 0;
+  const animalLine = `Animals on farm: ${housed(aSheep, uSheep)} sheep, ${housed(aBoar, uBoar)} pigs, ${housed(aCattle, uCattle)} cattle (reserve: ${uSheep}/${uBoar}/${uCattle}).`;
+
+  const stockpileLine =
+    `Stockpile: ${r.food ?? 0} food, ${r.wood ?? 0} wood, ${r.clay ?? 0} clay, ` +
+    `${r.reed ?? 0} reed, ${r.stone ?? 0} stone, ${r.grain ?? 0} grain, ${r.vegetable ?? 0} vegetable.`;
+
+  const farmLine =
+    `Farm: ${f.rooms} ${f.roomType} room${f.rooms === 1 ? '' : 's'}, ` +
+    `${f.fields} field${f.fields === 1 ? '' : 's'}, ` +
+    `${f.pastures} pasture${f.pastures === 1 ? '' : 's'}, ` +
+    `${f.stables} stable${f.stables === 1 ? '' : 's'}, ${f.fencedSpaces} fence segments.`;
+
+  const familyLine = `Family: ${fam.people} people${fam.canGrow ? ' (can grow this turn)' : ', no room to grow'}.`;
+
+  const placed = b.me.placedFarmersThisRound ?? [];
+  const placedLine = placed.length > 0
+    ? `Already placed this round: ${placed.join(', ')}. DO NOT recommend these — pick a different action.`
+    : 'No farmers placed yet this round.';
+
+  // Open action spaces: subset, by name. The full list is in actionBoard[]
+  // for the LLM to consult; here we just orient.
+  const open = b.actionBoard
+    .filter((s) => !s.takenBy)
+    .map((s) => s.name)
+    .slice(0, 8);
+  const moreCount = b.actionBoard.filter((s) => !s.takenBy).length - open.length;
+  const openLine = open.length > 0
+    ? `Open spaces (first ${open.length}): ${open.join(', ')}${moreCount > 0 ? `, +${moreCount} more` : ''}.`
+    : 'No open action spaces — all placements taken.';
+
+  return [
+    `Round ${b.round} — ${turn}.`,
+    harvestLine,
+    farmLine,
+    animalLine,
+    stockpileLine,
+    familyLine,
+    placedLine,
+    openLine,
+  ].join(' ');
+}
+
 export function distill(
   gamedatas: unknown,
   mePlayerId: string,
@@ -632,6 +712,9 @@ export function distill(
       availableMajorImprovements: majors,
     };
     if (draftPool) briefing.draftPool = draftPool;
+    // Compute the LLM cheat-sheet summary last so it sees all the derived
+    // fields (harvest plan, placed farmers, action board with takenBy).
+    briefing.summary = buildBriefingSummary(briefing);
 
     return { ok: true, briefing };
   } catch (err) {

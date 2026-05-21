@@ -110,6 +110,13 @@ export interface PositionBriefing {
   isMyTurn: boolean;
   legalActions: string[]; // from gamedatas.gamestate.possibleactions
   decisionPrompt?: string; // gamestate description, if present
+  /** Plain-English pre-digest of the key facts: round, harvest status,
+   *  farm shape, animals, stockpile, family, placed-this-round, open
+   *  actions. Provided FIRST in the LLM context so the model can anchor
+   *  on a cheat sheet before parsing the dense JSON. Counteracts known
+   *  failure modes: re-recommending already-placed actions, missing
+   *  shortfall warnings, conflating `animals.boar` with `resources.pig`. */
+  summary?: string;
   /** Pre-computed harvest plan for the active player. See HarvestPlan above. */
   harvest: HarvestPlan;
   me: PlayerView;

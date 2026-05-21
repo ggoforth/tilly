@@ -203,16 +203,22 @@ interface ChatMsg {
 
 function buildMessages(req: AdvisorRequest): ChatMsg[] {
   if (req.kind === 'cancel' || req.kind === 'get-last-prompt') return [];
-  const briefing = JSON.stringify(req.briefing);
+  const briefingJson = JSON.stringify(req.briefing);
+  // Surface the pre-digested summary ABOVE the JSON. Smaller / faster models
+  // (gemini-2.5-flash et al) systematically miss buried JSON fields — the
+  // summary is a flat cheat sheet that anchors them before the structured
+  // data. Falls back gracefully if a briefing without a summary slips
+  // through (older clients, future schema mismatch).
+  const summary = req.briefing.summary;
+  const briefingBlock = summary
+    ? `Position summary (read this FIRST — authoritative cheat sheet):\n${summary}\n\nFull briefing (JSON, for detail lookups):\n${briefingJson}`
+    : `Position briefing (JSON):\n${briefingJson}`;
   const msgs: ChatMsg[] = [{ role: 'system', content: STRATEGY_PREAMBLE }];
   if (req.kind === 'advise') {
     // System → briefing → recent conversation → final advise instruction.
     // Sandwiching history between current-state and the ask lets the LLM
     // see "what we just discussed" while keeping the actionable prompt last.
-    msgs.push({
-      role: 'user',
-      content: `Position briefing (JSON):\n${briefing}`,
-    });
+    msgs.push({ role: 'user', content: briefingBlock });
     for (const t of (req.history ?? []) as ChatTurn[]) {
       msgs.push({ role: t.role, content: t.content });
     }
@@ -220,7 +226,7 @@ function buildMessages(req: AdvisorRequest): ChatMsg[] {
   } else {
     msgs.push({
       role: 'user',
-      content: `Position briefing (JSON):\n${briefing}\n\nAnswer questions about THIS position, grounded only in the briefing.`,
+      content: `${briefingBlock}\n\nAnswer questions about THIS position, grounded only in the briefing.`,
     });
     for (const t of req.history as ChatTurn[]) {
       msgs.push({ role: t.role, content: t.content });

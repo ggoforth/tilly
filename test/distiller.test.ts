@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { distill } from '../src/advisor/distiller';
+import { distill, buildBriefingSummary } from '../src/advisor/distiller';
+import type { PositionBriefing } from '../src/shared/briefing';
 
 const FX = `${process.cwd()}/test/fixtures/`;
 const load = (f: string): unknown => JSON.parse(readFileSync(FX + f, 'utf8'));
@@ -698,4 +699,89 @@ test('actionBoard.takenBy reflects real occupancy (was always-null before)', () 
     'opponent',
     `Wish for Children should be takenBy=opponent; got ${wish!.takenBy}`,
   );
+});
+
+// ---- Briefing summary (LLM cheat-sheet) tests ----
+
+test('briefing.summary is present and contains round + harvest + farm lines', () => {
+  const r = distill(decision, ME);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  const s = r.briefing.summary;
+  assert.ok(typeof s === 'string' && s.length > 0, 'summary must be a non-empty string');
+  assert.match(s!, /Round \d+ — /, 'summary should open with "Round N — "');
+  assert.match(s!, /Harvest/, 'summary should mention harvest');
+  assert.match(s!, /Farm: /, 'summary should include farm line');
+  assert.match(s!, /Stockpile: /, 'summary should include stockpile line');
+  assert.match(s!, /Family: /, 'summary should include family line');
+});
+
+test('summary warns DO NOT recommend already-placed actions', () => {
+  // Construct a briefing where farmers have been placed this round, then
+  // assert the summary surfaces them with the strong instruction. This is
+  // the direct counter to the "told me to grab Clay Pit when I already had"
+  // pattern observed in the live R11 trace.
+  const bf: PositionBriefing = {
+    schemaVersion: 1,
+    round: 11, phase: 'work', isMyTurn: true,
+    legalActions: ['actPlaceFarmer'],
+    harvest: { nextHarvestRound: 11, roundsUntilHarvest: 0, foodNeededAtNextHarvest: 6, foodShortfall: 0 },
+    me: {
+      resources: { food: 7, wood: 0, clay: 7, reed: 4, stone: 4, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 4, stable: 4 },
+      animals: { sheep: 1, boar: 2, cattle: 0 },
+      unplacedAnimals: { sheep: 0, boar: 0, cattle: 0 },
+      farm: { rooms: 3, roomType: 'wood', fields: 0, pastures: 2, stables: 0, fencedSpaces: 11, emptySpaces: 0, emptyRooms: 0, canBuildRoom: false, canBuildStable: false, canBuildFence: false },
+      family: { people: 3, canGrow: false },
+      played: [],
+      placedFarmersThisRound: ['Clay Pit', 'Cattle Market'],
+      hand: [],
+    },
+    opponents: [],
+    actionBoard: [
+      { id: 'ActionClayPit', name: 'Clay Pit', takenBy: 'me' },
+      { id: 'ActionDayLaborer', name: 'Day Laborer' },
+      { id: 'ActionFishing', name: 'Fishing' },
+    ],
+    availableMajorImprovements: [],
+  };
+  const s = buildBriefingSummary(bf);
+  assert.match(s, /Already placed this round: Clay Pit, Cattle Market\./);
+  assert.match(s, /DO NOT recommend these/);
+  assert.match(s, /Open spaces \(first \d+\): /);
+});
+
+test('summary uses "pigs" not "boar" so it matches resources.pig naming', () => {
+  // Eliminates one LLM reconciliation step (animals.boar vs resources.pig
+  // referring to the same thing). The summary must speak in resource-pile
+  // vocabulary.
+  const r = distill(decision, ME);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  assert.match(r.briefing.summary!, /pigs/);
+  assert.doesNotMatch(r.briefing.summary!, /\bboar\b/);
+});
+
+test('summary calls out harvest SHORTFALL in caps when food is short', () => {
+  // Strong-signal language for the LLM. Lower-case "shortfall" lost in
+  // attention; CAPS plus the gap number anchors the recommendation toward
+  // food-gathering moves.
+  const bf: PositionBriefing = {
+    schemaVersion: 1,
+    round: 6, phase: 'work', isMyTurn: true,
+    legalActions: ['actPlaceFarmer'],
+    harvest: { nextHarvestRound: 7, roundsUntilHarvest: 1, foodNeededAtNextHarvest: 6, foodShortfall: 4 },
+    me: {
+      resources: { food: 2, wood: 0, clay: 0, reed: 0, stone: 0, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 0, stable: 0 },
+      animals: { sheep: 0, boar: 0, cattle: 0 },
+      unplacedAnimals: { sheep: 0, boar: 0, cattle: 0 },
+      farm: { rooms: 2, roomType: 'wood', fields: 0, pastures: 0, stables: 0, fencedSpaces: 0, emptySpaces: 5, emptyRooms: 0, canBuildRoom: false, canBuildStable: false, canBuildFence: false },
+      family: { people: 2, canGrow: false },
+      played: [], placedFarmersThisRound: [], hand: [],
+    },
+    opponents: [],
+    actionBoard: [],
+    availableMajorImprovements: [],
+  };
+  const s = buildBriefingSummary(bf);
+  assert.match(s, /SHORTFALL of 4 food/);
 });
