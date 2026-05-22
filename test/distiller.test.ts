@@ -765,7 +765,44 @@ test('summary warns DO NOT recommend already-placed actions', () => {
   const s = buildBriefingSummary(bf);
   assert.match(s, /Already placed this round: Clay Pit, Cattle Market\./);
   assert.match(s, /DO NOT recommend these/);
-  assert.match(s, /Open spaces \(first \d+\): /);
+  assert.match(s, /Open spaces \(RECOMMEND ONLY FROM THIS EXHAUSTIVE LIST/);
+});
+
+test('summary lists ALL open spaces (not truncated) — anti-hallucination signal', () => {
+  // Live R6 regression: Tilly recommended 'Wish for Children' when it
+  // wasn't in actionBoard. Verified the actionBoard filter is correct
+  // (the LLM made it up). The summary previously truncated the open
+  // list to 'first 8 + N more' — the '+N more' invited the LLM to fill
+  // in plausible extras from training data. Exhaustive listing closes
+  // that seam.
+  const manySpaces: PositionBriefing['actionBoard'] = [];
+  for (let i = 0; i < 16; i++) {
+    manySpaces.push({ id: `ActionX${i}`, name: `SpaceName${i}` });
+  }
+  const bf: PositionBriefing = {
+    schemaVersion: 1,
+    round: 6, phase: 'work', isMyTurn: true,
+    legalActions: ['actPlaceFarmer'],
+    harvest: { nextHarvestRound: 7, roundsUntilHarvest: 1, foodNeededAtNextHarvest: 6, foodShortfall: 0 },
+    me: {
+      resources: { food: 7, wood: 1, clay: 3, reed: 1, stone: 0, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 15, stable: 4 },
+      animals: { sheep: 0, boar: 0, cattle: 0 },
+      unplacedAnimals: { sheep: 0, boar: 0, cattle: 0 },
+      farm: { rooms: 3, roomType: 'wood', fields: 0, pastures: 0, stables: 1, fencedSpaces: 0, emptySpaces: 0, emptyRooms: 1, canBuildRoom: false, canBuildStable: true, canBuildFence: true },
+      family: { people: 2, canGrow: true },
+      played: [], placedFarmersThisRound: [], hand: [],
+    },
+    opponents: [],
+    actionBoard: manySpaces,
+    availableMajorImprovements: [],
+  };
+  const s = buildBriefingSummary(bf);
+  // All 16 names appear in the summary; no '+N more' truncation.
+  for (let i = 0; i < 16; i++) {
+    assert.match(s, new RegExp(`SpaceName${i}`), `must list SpaceName${i} explicitly`);
+  }
+  assert.doesNotMatch(s, /\+\d+ more/, 'must NOT truncate with +N more (hallucination seam)');
+  assert.match(s, /anything else is a hallucination/);
 });
 
 test('summary uses "pigs" not "boar" so it matches resources.pig naming', () => {

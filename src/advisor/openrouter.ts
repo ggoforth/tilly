@@ -321,8 +321,32 @@ export function buildMessages(req: AdvisorRequest): ChatMsg[] {
  *  an advise/chat request to OpenRouter. The diagnostic "Copy last prompt"
  *  button in the Events panel reads this on demand via the get-last-prompt
  *  message. Module-level so it survives across port reconnects within the
- *  same service-worker lifetime. */
+ *  same service-worker lifetime — AND mirrored to chrome.storage.local
+ *  so it also survives Chrome MV3 worker recycles (background workers can
+ *  be suspended/restarted by the browser at any time, dropping in-memory
+ *  state). Without persistence the user saw "no last prompt" after every
+ *  BGA tab refresh; storage mirroring fixes that. */
+const LAST_PROMPT_KEY = 'tilly_last_prompt';
 let lastPromptText: string | null = null;
+
+function persistLastPrompt(text: string): void {
+  lastPromptText = text;
+  try {
+    void chrome.storage.local.set({ [LAST_PROMPT_KEY]: text });
+  } catch {
+    /* storage write must never break the API call path */
+  }
+}
+
+async function loadLastPromptFromStorage(): Promise<string | null> {
+  try {
+    const got = await chrome.storage.local.get(LAST_PROMPT_KEY);
+    const v = got?.[LAST_PROMPT_KEY];
+    return typeof v === 'string' ? v : null;
+  } catch {
+    return null;
+  }
+}
 
 /** Convert a messages array to a human-readable block for clipboard /
  *  inspection. Plain newlines (not JSON-escaped \n) so the system preamble
@@ -355,7 +379,7 @@ async function stream(
   }
   // Build once so the prompt we cache is byte-identical to what gets sent.
   const messages = buildMessages(req);
-  lastPromptText = formatPromptForClipboard(messages);
+  persistLastPrompt(formatPromptForClipboard(messages));
   let res: Response;
   try {
     res = await fetch(ENDPOINT, {
@@ -461,15 +485,22 @@ export function registerAdvisorPort(): void {
         return;
       }
       if (req.kind === 'get-last-prompt') {
-        try {
-          port.postMessage({
-            kind: 'last-prompt',
-            requestId: req.requestId,
-            prompt: lastPromptText,
-          } satisfies AdvisorResponse);
-        } catch {
-          /* port closed */
-        }
+        // Fall back to chrome.storage if in-memory cache was wiped by an
+        // MV3 worker recycle. The storage mirror is updated every time
+        // we send a prompt, so it's the authoritative "last sent".
+        void (async () => {
+          const prompt = lastPromptText ?? (await loadLastPromptFromStorage());
+          if (prompt && !lastPromptText) lastPromptText = prompt; // warm cache
+          try {
+            port.postMessage({
+              kind: 'last-prompt',
+              requestId: req.requestId,
+              prompt,
+            } satisfies AdvisorResponse);
+          } catch {
+            /* port closed */
+          }
+        })();
         return;
       }
       if (req.kind !== 'advise' && req.kind !== 'chat') return;

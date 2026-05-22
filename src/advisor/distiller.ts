@@ -643,15 +643,17 @@ export function buildBriefingSummary(b: PositionBriefing): string {
     ? `Already placed this round: ${placed.join(', ')}. DO NOT recommend these — pick a different action.`
     : 'No farmers placed yet this round.';
 
-  // Open action spaces: subset, by name. The full list is in actionBoard[]
-  // for the LLM to consult; here we just orient.
-  const open = b.actionBoard
+  // Open action spaces: EXHAUSTIVE list of placeable spaces this round, by
+  // name. Previously truncated to first 8 with '+N more' — that seam was
+  // giving the LLM permission to hallucinate plausible extras from training
+  // data (e.g. recommending 'Wish for Children' in R6 when it wasn't on
+  // the board; live trace 12:02 PM). The full list is bounded (~20 cards
+  // in standard Agricola) so cost of listing all is tiny.
+  const openNames = b.actionBoard
     .filter((s) => !s.takenBy)
-    .map((s) => s.name)
-    .slice(0, 8);
-  const moreCount = b.actionBoard.filter((s) => !s.takenBy).length - open.length;
-  const openLine = open.length > 0
-    ? `Open spaces (first ${open.length}): ${open.join(', ')}${moreCount > 0 ? `, +${moreCount} more` : ''}.`
+    .map((s) => s.name);
+  const openLine = openNames.length > 0
+    ? `Open spaces (RECOMMEND ONLY FROM THIS EXHAUSTIVE LIST, plus availableMajorImprovements or me.hand — anything else is a hallucination): ${openNames.join(', ')}.`
     : 'No open action spaces — all placements taken.';
 
   return [
