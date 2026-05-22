@@ -330,7 +330,16 @@ let lastPromptText: string | null = null;
  *  text editor. */
 function formatPromptForClipboard(messages: ChatMsg[]): string {
   return messages
-    .map((m) => `====== ${m.role.toUpperCase()} ======\n${m.content}`)
+    .map((m) => {
+      // System messages now use structured content blocks (to carry the
+      // cache_control marker). Flatten them back to readable text for the
+      // clipboard diagnostic; without this the system block renders as
+      // "[object Object]" (the default Array.toString() output).
+      const text = typeof m.content === 'string'
+        ? m.content
+        : m.content.map((b) => b.text).join('\n');
+      return `====== ${m.role.toUpperCase()} ======\n${text}`;
+    })
     .join('\n\n');
 }
 

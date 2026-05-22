@@ -540,16 +540,44 @@ export function buildBriefingSummary(b: PositionBriefing): string {
   const h = b.harvest;
 
   const harvestLine = (() => {
+    const haveFood = r.food ?? 0;
+    // Project the harvest AFTER the next one. If the next harvest is THIS
+    // round, "covered" is misleading without surfacing what happens next:
+    // food drops to 0 (or close), and the round-7 (or round-9 etc.) harvest
+    // arrives in 2-3 rounds with no built food engine. This was the live
+    // R4 trace failure mode — LLM saw "covered", pivoted to VP, and the
+    // user warned about beggar tokens at the NEXT harvest, not this one.
+    const HARVEST_ROUNDS = [4, 7, 9, 11, 13, 14];
+    // The harvest-after-next, if any — only relevant when we know which
+    // harvest we're currently at. If nextHarvestRound is null we've
+    // already passed the final harvest; skip the projection.
+    const currentHarvestRound = h.nextHarvestRound;
+    const nextNext = currentHarvestRound != null
+      ? HARVEST_ROUNDS.find((rn) => rn > currentHarvestRound)
+      : undefined;
+    const foodAfterNextHarvest = Math.max(0, haveFood - h.foodNeededAtNextHarvest);
+    const postNote = nextNext != null && currentHarvestRound != null
+      ? (() => {
+          const roundsToNextNext = nextNext - currentHarvestRound;
+          const needNextNext = fam.people * 2;
+          const gap = Math.max(0, needNextNext - foodAfterNextHarvest);
+          const tail = gap > 0
+            ? `gap of ${gap} food`
+            : 'covered if no growth';
+          return ` AFTER this harvest food drops to ${foodAfterNextHarvest}; next harvest is round ${nextNext} (${roundsToNextNext} round${roundsToNextNext === 1 ? '' : 's'} after this one) needing ${needNextNext} — ${tail}.`;
+        })()
+      : ' Final harvest.';
+
     if (h.roundsUntilHarvest === 0) {
       const tail = h.foodShortfall > 0
-        ? `SHORTFALL of ${h.foodShortfall} food (have ${r.food ?? 0}, need ${h.foodNeededAtNextHarvest})`
-        : `covered (have ${r.food ?? 0}, need ${h.foodNeededAtNextHarvest})`;
-      return `Harvest THIS ROUND — ${tail}.`;
+        ? `SHORTFALL of ${h.foodShortfall} food (have ${haveFood}, need ${h.foodNeededAtNextHarvest})`
+        : `covered for THIS harvest (have ${haveFood}, need ${h.foodNeededAtNextHarvest})`;
+      return `Harvest THIS ROUND — ${tail}.${postNote}`;
     }
     if (h.foodShortfall > 0) {
-      return `Harvest round ${h.nextHarvestRound} (${h.roundsUntilHarvest} away) — SHORTFALL of ${h.foodShortfall} food (have ${r.food ?? 0}, need ${h.foodNeededAtNextHarvest}).`;
+      return `Harvest round ${h.nextHarvestRound} (${h.roundsUntilHarvest} away) — SHORTFALL of ${h.foodShortfall} food (have ${haveFood}, need ${h.foodNeededAtNextHarvest}).`;
     }
-    return `Harvest round ${h.nextHarvestRound} (${h.roundsUntilHarvest} away) — food covered (${r.food ?? 0}/${h.foodNeededAtNextHarvest}).`;
+    return `Harvest round ${h.nextHarvestRound} (${h.roundsUntilHarvest} away) — food covered (${haveFood}/${h.foodNeededAtNextHarvest}).`;
   })();
 
   // Animals: surface housed + reserve explicitly. Uses "pigs" (not "boar") so

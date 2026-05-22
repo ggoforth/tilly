@@ -851,6 +851,42 @@ test('summary affirms "can build" actions when all canBuild* flags are true', ()
   assert.doesNotMatch(s, /CANNOT AFFORD/);
 });
 
+test('summary projects post-harvest food gap when harvest is THIS round', () => {
+  // Live R4 regression: foodShortfall was 0 (covered) but the LLM read
+  // "covered" and pivoted to Farm Expansion — ignoring that after this
+  // harvest food drops to 0, and the NEXT harvest (round 7, 3 rounds
+  // away) needs 4 food with no engine in place. User warned about
+  // beggar tokens twice; advisor doubled down on the wood room. Fix:
+  // surface the post-harvest projection explicitly so "covered" can't
+  // be mistaken for "food is solved".
+  const bf: PositionBriefing = {
+    schemaVersion: 1,
+    round: 4, phase: 'work', isMyTurn: true,
+    legalActions: ['actPlaceFarmer'],
+    harvest: { nextHarvestRound: 4, roundsUntilHarvest: 0, foodNeededAtNextHarvest: 4, foodShortfall: 0 },
+    me: {
+      resources: { food: 4, wood: 8, clay: 3, reed: 3, stone: 0, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 15, stable: 4 },
+      animals: { sheep: 0, boar: 0, cattle: 0 },
+      unplacedAnimals: { sheep: 0, boar: 0, cattle: 0 },
+      farm: { rooms: 2, roomType: 'wood', fields: 0, pastures: 0, stables: 0, fencedSpaces: 0, emptySpaces: 0, emptyRooms: 0, canBuildRoom: true, canBuildStable: true, canBuildFence: true },
+      family: { people: 2, canGrow: false },
+      played: [], placedFarmersThisRound: ['Forest'], hand: [],
+    },
+    opponents: [],
+    actionBoard: [],
+    availableMajorImprovements: [],
+  };
+  const s = buildBriefingSummary(bf);
+  // Must call out post-harvest depletion with concrete numbers.
+  assert.match(s, /AFTER this harvest food drops to 0/);
+  assert.match(s, /next harvest is round 7/);
+  assert.match(s, /3 rounds after this one/);
+  assert.match(s, /needing 4/);
+  assert.match(s, /gap of 4 food/);
+  // The "covered" wording is still there but qualified.
+  assert.match(s, /covered for THIS harvest/);
+});
+
 test('summary calls out harvest SHORTFALL in caps when food is short', () => {
   // Strong-signal language for the LLM. Lower-case "shortfall" lost in
   // attention; CAPS plus the gap number anchors the recommendation toward
