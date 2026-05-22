@@ -179,7 +179,7 @@ GENERAL STRATEGIC GUIDANCE
 USER PUSHBACK PROTOCOL (chat replies — non-negotiable):
 - If the user pushes back on your recommendation — ANY signal of disagreement ("are you trying to earn beggar cards?", "I don't have animals", "I can't afford that", "but we feed right now") — you MUST abandon your prior move and propose a DIFFERENT one. Never re-propose the same action you just suggested. Even if you still think you were right, the user has new information you don't (next action, harvest math they're tracking, plans for next round).
 - When the user states a consequence ("I will get beggar tokens", "I can't pay", "I'd lose an animal"), TREAT THAT STATEMENT AS AUTHORITATIVE even if the briefing's math suggests otherwise. The user is closer to the live game than the briefing. Acknowledge briefly: "Right — taking <thing> now leaves you short. Here's the food-focused move instead: ..." then propose a different move.
-- FOOD URGENCY OVERRIDE: if the user mentions begging tokens, harvest feeding, or "I need food", immediately pivot to the highest-food-yielding action currently in actionBoard (Fishing, Day Laborer, Sheep Market, Meeting Place — whichever has the most food). Compare \`actionBoard[i].goods\` values to find the largest food yield. Recommend that space. Do NOT propose Farmland, Fencing, Improvements, Plow, or any non-food move when food is the user's stated concern.
+- FOOD URGENCY OVERRIDE (gated on real shortfall, NOT just keywords): if the user mentions begging tokens, harvest feeding, or "I need food", FIRST check \`harvest.foodShortfall\` in the briefing. (a) If shortfall > 0: pivot immediately to the highest-food-yielding action currently in actionBoard (Fishing, Day Laborer, Sheep Market, Meeting Place — compare \`actionBoard[i].goods\` values, pick the largest food yield). Do NOT propose Farmland, Fencing, Improvements, Plow, or any non-food move. (b) If shortfall == 0 (food is COVERED per the briefing): acknowledge their concern but reconcile against the data — say something like "Looking at the brief, you have N food and need M for round X — you're actually covered. Unless there's something I'm missing, here's a stronger VP move: ..." then propose a VP-generating action. The briefing's foodShortfall is the source of truth; user concern alone is not sufficient justification for grabbing food when math says food is solved.
 - REPEAT-ADVICE BAN: if you've already recommended action X in this conversation and the user has not acted on it AND/OR has pushed back, do NOT recommend X again in your next message. Find an alternative.
 
 HARD RULES — never violate:
@@ -212,7 +212,7 @@ BRIEFING-FIELD ANCHORS (specific guidance on reading the briefing):
 
 Common strategic mistakes to NOT make (observed in live play — each rule prevents a specific recurring error):
 
-- **Stop optimizing food when food is solved.** Compute: required_food = me.family.people × 2 × remaining_harvests. Harvest schedule in a 14-round game: rounds 4, 7, 9, 11, 13, 14. If \`me.resources.food\` already exceeds the required total, food is COVERED. Do NOT keep recommending Fishing / Day Laborer / Sheep Market for more food — pivot to VP-generating actions (fields, pastures, animals you can house, rooms, improvements).
+- **Stop optimizing food when food is solved.** Read \`harvest.foodShortfall\` directly — it is the pre-computed gap to feed the family at the next harvest. If \`foodShortfall == 0\`, food is COVERED for the next harvest; do NOT keep recommending Fishing / Day Laborer / Sheep Market / Meeting Place for more food. Pivot to VP-generating actions (fields, pastures, animals you can house, rooms, improvements). The briefing summary's "Harvest …" line restates this for emphasis — when it says "covered", food is not the bottleneck. Only return to food if shortfall climbs back above 0 in a later briefing.
 
 - **Animals need housing or they're discarded at end of round.** Sheep/boar/cattle housing options: pasture (fenced area, holds 2 of one species; +2 more with a stable on it), or a single stable (holds 1), or 1 of any type in your home as a pet. If \`me.farm.pastures + me.farm.stables == 0\` and you'd recommend taking an animal, the animal is WASTED unless you also include a Fencing or Build-Stables step in the same reasoning. Never recommend "take N sheep" with no housing plan.
 
@@ -238,12 +238,25 @@ MOVE: <a SHORT, friendly imperative — ≤8 words, conversational, like a frien
 WHY: 1-2 sentences in the same friendly tone, explaining the strategic angle or what it sets up. The player only sees WHY if they expand it, so make it worth reading.
 Commit to a single recommendation. Do NOT list alternatives, do NOT write "actually" or second-guess yourself, no separators, no preamble. If the only real options are confirm/restart, reply exactly: MOVE: (confirm — no real decision)`;
 
-interface ChatMsg {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+/** Content block — used ONLY on the system message so we can attach the
+ *  cache_control marker. User/assistant messages stay as plain strings,
+ *  which is enough for OpenRouter / Anthropic to accept the request and
+ *  cache only the structured (system) prefix. */
+interface SystemContentBlock {
+  type: 'text';
+  text: string;
+  cache_control?: { type: 'ephemeral' };
 }
 
-function buildMessages(req: AdvisorRequest): ChatMsg[] {
+interface ChatMsg {
+  role: 'system' | 'user' | 'assistant';
+  /** System message uses content blocks (to attach cache_control); user
+   *  and assistant messages use plain strings. OpenRouter accepts the
+   *  mixed shape per the Anthropic-compatible API. */
+  content: string | SystemContentBlock[];
+}
+
+export function buildMessages(req: AdvisorRequest): ChatMsg[] {
   if (req.kind === 'cancel' || req.kind === 'get-last-prompt') return [];
   const briefingJson = JSON.stringify(req.briefing);
   // Surface the pre-digested summary ABOVE the JSON. Smaller / faster models
@@ -255,7 +268,25 @@ function buildMessages(req: AdvisorRequest): ChatMsg[] {
   const briefingBlock = summary
     ? `Position summary (read this FIRST — authoritative cheat sheet):\n${summary}\n\nFull briefing (JSON, for detail lookups):\n${briefingJson}`
     : `Position briefing (JSON):\n${briefingJson}`;
-  const msgs: ChatMsg[] = [{ role: 'system', content: STRATEGY_PREAMBLE }];
+  // Structure the system message as a content block with cache_control so
+  // OpenRouter / Anthropic cache the preamble across turns. The preamble is
+  // identical byte-for-byte every call, well over the 1024-token minimum
+  // for Sonnet 4.6, so cache hits should land on every turn after the
+  // first within the 5-minute TTL. Cache write = 1.25× input; cache read
+  // = 0.1× input — net savings ~70% on the cached prefix.
+  // Spec: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
+  const msgs: ChatMsg[] = [
+    {
+      role: 'system',
+      content: [
+        {
+          type: 'text',
+          text: STRATEGY_PREAMBLE,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+    },
+  ];
   if (req.kind === 'advise') {
     // System → briefing → recent conversation → final advise instruction.
     // Sandwiching history between current-state and the ask lets the LLM
@@ -321,6 +352,10 @@ async function stream(
       body: JSON.stringify({
         model: cfg.model,
         stream: true,
+        // Ask OpenRouter to emit per-request usage stats in the stream
+        // (cache_read_input_tokens etc.). Used by the diagnostic log
+        // below to verify prompt caching is actually landing.
+        stream_options: { include_usage: true },
         messages,
       }),
       signal,
@@ -348,6 +383,11 @@ async function stream(
   const decoder = new TextDecoder();
   let buf = '';
   let full = '';
+  // Last seen usage block — OpenRouter emits this in the final stream
+  // chunk when stream_options.include_usage is set. We log it on stream
+  // end so the service-worker console can be inspected to verify cache
+  // hits are actually landing (cache_read_input_tokens > 0 after turn 2).
+  let lastUsage: unknown = null;
   try {
     for (;;) {
       const { done, value } = await reader.read();
@@ -360,6 +400,7 @@ async function stream(
         if (!s.startsWith('data:')) continue;
         const data = s.slice(5).trim();
         if (data === '[DONE]') {
+          if (lastUsage) console.log('[tilly] usage:', lastUsage);
           send({ kind: 'done', requestId: req.requestId, full });
           return;
         }
@@ -370,11 +411,13 @@ async function stream(
             full += delta;
             send({ kind: 'chunk', requestId: req.requestId, delta });
           }
+          if (json?.usage) lastUsage = json.usage;
         } catch {
           /* ignore keep-alive / partial lines */
         }
       }
     }
+    if (lastUsage) console.log('[tilly] usage:', lastUsage);
     send({ kind: 'done', requestId: req.requestId, full });
   } catch (err) {
     send({
