@@ -217,37 +217,53 @@ test('animals = total owned (housed + supply); unplacedAnimals = supply only', (
   assert.equal(r.briefing.me.unplacedAnimals.boar, 1, 'reserve boar IS unplaced');
 });
 
-test('computeHarvestPlan: shortfall surfaces correctly across rounds', async () => {
+test('computeHarvestPlan: shortfall surfaces correctly across rounds (multiplayer rate, 2/person)', async () => {
   const { computeHarvestPlan } = await import('../src/advisor/distiller');
+  // playerCount=2 → multiplayer rate (2 food per person).
   // Round 1, 2 people, 0 food → next harvest R4, 3 rounds away, need 4, gap 4
-  let plan = computeHarvestPlan(1, 2, 0);
+  let plan = computeHarvestPlan(1, 2, 0, 2);
   assert.equal(plan.nextHarvestRound, 4);
   assert.equal(plan.roundsUntilHarvest, 3);
   assert.equal(plan.foodNeededAtNextHarvest, 4);
   assert.equal(plan.foodShortfall, 4);
   // R4 with 3 food and 2 people → harvest is now (0 away), need 4, gap 1
-  plan = computeHarvestPlan(4, 2, 3);
+  plan = computeHarvestPlan(4, 2, 3, 2);
   assert.equal(plan.nextHarvestRound, 4);
   assert.equal(plan.roundsUntilHarvest, 0);
   assert.equal(plan.foodShortfall, 1);
   // R5 → next harvest R7, 2 rounds away
-  plan = computeHarvestPlan(5, 3, 0);
+  plan = computeHarvestPlan(5, 3, 0, 2);
   assert.equal(plan.nextHarvestRound, 7);
   assert.equal(plan.roundsUntilHarvest, 2);
   assert.equal(plan.foodNeededAtNextHarvest, 6);
   // R14 (final harvest) with plenty of food → no shortfall, this round IS harvest
-  plan = computeHarvestPlan(14, 4, 10);
+  plan = computeHarvestPlan(14, 4, 10, 2);
   assert.equal(plan.nextHarvestRound, 14);
   assert.equal(plan.roundsUntilHarvest, 0);
   assert.equal(plan.foodShortfall, 0);
   // R15 (past final) → no future harvest
-  plan = computeHarvestPlan(15, 3, 0);
+  plan = computeHarvestPlan(15, 3, 0, 2);
   assert.equal(plan.nextHarvestRound, null);
   assert.equal(plan.roundsUntilHarvest, null);
   assert.equal(plan.foodShortfall, 6);
 });
 
-test('distill populates briefing.harvest from current round + family + food', () => {
+test('computeHarvestPlan: solo Beginner uses 3/person rate (live R4 regression)', async () => {
+  // Live R4 trace: 2-person solo Beginner game needed 6 food at harvest,
+  // distiller was reporting 4 (multiplayer rate). User caught it and
+  // corrected to '6 food, not 4'. Solo Beginner = playerCount 1 = 3/person.
+  const { computeHarvestPlan, feedRatePerPerson } = await import('../src/advisor/distiller');
+  assert.equal(feedRatePerPerson(1), 3, 'solo Beginner rate is 3 food per person');
+  assert.equal(feedRatePerPerson(2), 2, '2+ player games use 2 food per person');
+  assert.equal(feedRatePerPerson(4), 2, '4-player still 2 food per person');
+
+  // Exact R4 scenario: 2 people, 4 food, playerCount 1 → need 6, shortfall 2.
+  const plan = computeHarvestPlan(4, 2, 4, 1);
+  assert.equal(plan.foodNeededAtNextHarvest, 6, 'solo: 2 people × 3 = 6');
+  assert.equal(plan.foodShortfall, 2, 'solo R4 with 4 food: shortfall of 2');
+});
+
+test('distill populates briefing.harvest from current round + family + food (solo rate)', () => {
   const fakeGd: any = {
     gamestate: { id: 1, name: 'placeFarmer', active_player: ME, possibleactions: ['actPlaceFarmer'] },
     players: { [ME]: { id: ME, name: 'me', resources: { food: 0 } } },
@@ -261,10 +277,12 @@ test('distill populates briefing.harvest from current round + family + food', ()
   const r = distill(fakeGd, ME);
   assert.ok(r.ok);
   if (!r.ok) return;
-  // R3, 2 farmers, 0 food → harvest at R4, 1 round away, need 4 food, gap 4
+  // R3, 2 farmers, 0 food, SOLO (only ME in players, no opponents).
+  // Solo Beginner = 3 food per person → 2 people need 6 → shortfall 6.
   assert.equal(r.briefing.harvest.nextHarvestRound, 4);
   assert.equal(r.briefing.harvest.roundsUntilHarvest, 1);
-  assert.equal(r.briefing.harvest.foodShortfall, 4);
+  assert.equal(r.briefing.harvest.foodNeededAtNextHarvest, 6);
+  assert.equal(r.briefing.harvest.foodShortfall, 6);
 });
 
 test('farm.canBuildRoom is false when reed is insufficient (the 1-reed bug)', () => {
@@ -851,19 +869,23 @@ test('summary affirms "can build" actions when all canBuild* flags are true', ()
   assert.doesNotMatch(s, /CANNOT AFFORD/);
 });
 
-test('summary projects post-harvest food gap when harvest is THIS round', () => {
-  // Live R4 regression: foodShortfall was 0 (covered) but the LLM read
-  // "covered" and pivoted to Farm Expansion — ignoring that after this
-  // harvest food drops to 0, and the NEXT harvest (round 7, 3 rounds
-  // away) needs 4 food with no engine in place. User warned about
-  // beggar tokens twice; advisor doubled down on the wood room. Fix:
-  // surface the post-harvest projection explicitly so "covered" can't
-  // be mistaken for "food is solved".
+test('summary projects post-harvest food gap when harvest is THIS round (solo Beginner R4)', () => {
+  // Live R4 regression: foodShortfall was 0 in the buggy distiller
+  // (need=4) so the LLM read "covered" and pivoted to Farm Expansion —
+  // ignoring that after this harvest food drops to 0 and the NEXT harvest
+  // (round 7, 3 rounds away) needs more food with no engine in place. User
+  // warned about beggar tokens twice; advisor doubled down on the wood
+  // room. TWO fixes layered here:
+  //   1. computeHarvestPlan now uses 3/person in solo (Beginner) games,
+  //      so the SAME R4 scenario produces need=6 / shortfall=2 (correct).
+  //   2. buildBriefingSummary surfaces the post-harvest projection
+  //      explicitly so 'covered' can't be mistaken for 'food is solved'.
   const bf: PositionBriefing = {
     schemaVersion: 1,
     round: 4, phase: 'work', isMyTurn: true,
     legalActions: ['actPlaceFarmer'],
-    harvest: { nextHarvestRound: 4, roundsUntilHarvest: 0, foodNeededAtNextHarvest: 4, foodShortfall: 0 },
+    // Solo R4: 2 people × 3/person = 6 needed. 4 food → shortfall of 2.
+    harvest: { nextHarvestRound: 4, roundsUntilHarvest: 0, foodNeededAtNextHarvest: 6, foodShortfall: 2 },
     me: {
       resources: { food: 4, wood: 8, clay: 3, reed: 3, stone: 0, grain: 0, vegetable: 0, sheep: 0, pig: 0, cattle: 0, begging: 0, fence: 15, stable: 4 },
       animals: { sheep: 0, boar: 0, cattle: 0 },
@@ -877,14 +899,15 @@ test('summary projects post-harvest food gap when harvest is THIS round', () => 
     availableMajorImprovements: [],
   };
   const s = buildBriefingSummary(bf);
-  // Must call out post-harvest depletion with concrete numbers.
+  // SHORTFALL branch — shortfall is now non-zero with corrected solo rate.
+  assert.match(s, /SHORTFALL of 2 food/);
+  assert.match(s, /have 4, need 6/);
+  // Post-harvest projection with solo rate (3/person → 6 for 2 people).
   assert.match(s, /AFTER this harvest food drops to 0/);
   assert.match(s, /next harvest is round 7/);
   assert.match(s, /3 rounds after this one/);
-  assert.match(s, /needing 4/);
-  assert.match(s, /gap of 4 food/);
-  // The "covered" wording is still there but qualified.
-  assert.match(s, /covered for THIS harvest/);
+  assert.match(s, /needing 6/);
+  assert.match(s, /gap of 6 food/);
 });
 
 test('summary calls out harvest SHORTFALL in caps when food is short', () => {

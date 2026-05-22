@@ -18,10 +18,21 @@ const HARVEST_ROUNDS: ReadonlyArray<number> = [4, 7, 9, 11, 13, 14];
 
 /** Pre-compute the next-harvest food check the LLM has reliably failed to
  *  do under pressure. Pure / unit-testable. */
+/** Feeding rate per adult. Solo Beginner uses 3/person; 2+ player games
+ *  use 2/person. This is per the preamble's GAME STRUCTURE section and
+ *  matches the user's live R4 trace (2 people × 3 = 6 food needed, not 4).
+ *  Newborns still cost 1 regardless of player count; we don't model
+ *  newborns separately yet — the conservative-adult-rate approach errs
+ *  on the cautious-planning side. */
+export function feedRatePerPerson(playerCount: number): number {
+  return playerCount <= 1 ? 3 : 2;
+}
+
 export function computeHarvestPlan(
   round: number,
   people: number,
   food: number,
+  playerCount: number,
 ): HarvestPlan {
   let nextHarvestRound: number | null = null;
   for (const h of HARVEST_ROUNDS) {
@@ -32,9 +43,11 @@ export function computeHarvestPlan(
   }
   const roundsUntilHarvest =
     nextHarvestRound != null ? Math.max(0, nextHarvestRound - round) : null;
-  // Conservative: every family member eats 2 food. Newborns this round would
-  // pay only 1 but counting them at 2 errs on the cautious-planning side.
-  const foodNeededAtNextHarvest = Math.max(0, people) * 2;
+  // Each family member eats feedRatePerPerson(playerCount) food. Newborns
+  // this round would pay only 1 but counting them at the adult rate errs
+  // on the cautious-planning side.
+  const rate = feedRatePerPerson(playerCount);
+  const foodNeededAtNextHarvest = Math.max(0, people) * rate;
   const foodShortfall = Math.max(0, foodNeededAtNextHarvest - Math.max(0, food));
   return { nextHarvestRound, roundsUntilHarvest, foodNeededAtNextHarvest, foodShortfall };
 }
@@ -559,7 +572,9 @@ export function buildBriefingSummary(b: PositionBriefing): string {
     const postNote = nextNext != null && currentHarvestRound != null
       ? (() => {
           const roundsToNextNext = nextNext - currentHarvestRound;
-          const needNextNext = fam.people * 2;
+          // Same feed-rate logic as computeHarvestPlan — derive player
+          // count from b.opponents.length + 1 so the projection matches.
+          const needNextNext = fam.people * feedRatePerPerson(b.opponents.length + 1);
           const gap = Math.max(0, needNextNext - foodAfterNextHarvest);
           const tail = gap > 0
             ? `gap of ${gap} food`
@@ -763,7 +778,15 @@ export function distill(
           : typeof gs.description === 'string'
             ? gs.description
             : undefined,
-      harvest: computeHarvestPlan(round, meView.family.people, meView.resources.food ?? 0),
+      // Solo Beginner (1 player) feeds at 3/person; multiplayer at 2/person.
+      // Live R4 trace: 2-person solo game needed 6 food, distiller was
+      // reporting 4 (multiplayer rate). Player count is opponents + 1.
+      harvest: computeHarvestPlan(
+        round,
+        meView.family.people,
+        meView.resources.food ?? 0,
+        opponents.length + 1,
+      ),
       me: meView,
       opponents,
       actionBoard: actionBoard(gd, me, occupancyByCard, accumByCard),
