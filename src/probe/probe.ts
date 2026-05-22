@@ -15,6 +15,7 @@ import type { NotifChannel } from '../shared/types';
 import { distill } from '../advisor/distiller';
 import { Settler } from './settle';
 import { PlacementTracker } from './placement-tracker';
+import { CardTracker } from './card-tracker';
 import { TRIVIAL_ACTIONS } from '../shared/decision-gate';
 
 declare global {
@@ -153,6 +154,7 @@ function start(): void {
   // lags placements by SECONDS in BGA Agricola (verified at +33s in the
   // captured corpus — the briefing would otherwise read stale state).
   const placements = new PlacementTracker();
+  const cards = new CardTracker();
   const lastBriefingErrAt: Map<string, number> = new Map();
   const ERROR_DEBOUNCE_MS = 5000;
 
@@ -315,7 +317,14 @@ function start(): void {
       //                              pre-allocated count — verified live)
       const live = scrapeLiveResources();
       const livePiles = scrapeLiveAccumulatorPiles();
-      const r = distill(window.gameui?.gamedatas, me, placements.view(), live, livePiles);
+      const r = distill(
+        window.gameui?.gamedatas,
+        me,
+        placements.view(),
+        live,
+        livePiles,
+        cards.view(),
+      );
       const elapsed = performance.now() - t0;
       postToContent({ type: 'metric', name: 'distill-ms', value: elapsed });
 
@@ -469,6 +478,31 @@ function start(): void {
         }
       } else if (name === 'returnHome') {
         placements.onReturnHome();
+      } else if (
+        name === 'buyCard' ||
+        name === 'playCard' ||
+        name === 'playOccupation' ||
+        name === 'playImprovement'
+      ) {
+        // Card-ownership tracker. gd.playerCards lags by seconds (verified
+        // live R6→R7 trace: Fireplace bought, briefings 30+ seconds later
+        // still showed me.played:[]). The notification fires synchronously
+        // with the click and carries id + name + pid in a tolerant shape
+        // — different BGA notification paths nest the payload differently,
+        // so try the common locations before giving up.
+        const a: any = args;
+        const inner = a?.args && typeof a.args === 'object' ? a.args : a;
+        const cardId = inner?.card?.id ?? inner?.card_id ?? inner?.cardId;
+        const cardName =
+          inner?.card?.name ?? inner?.card_name ?? inner?.cardName;
+        const pid = inner?.player_id ?? inner?.pId;
+        if (cardId && pid != null) {
+          cards.onCardOwned(
+            String(pid),
+            String(cardId),
+            String(cardName ?? cardId),
+          );
+        }
       }
     } catch {
       /* tracker must not break the probe */
@@ -778,6 +812,11 @@ function start(): void {
         for (const c of list) if (c?.id) nameByCard.set(String(c.id), String(c.name ?? c.id));
       }
       placements.seedFromMeeples(ms, (id) => nameByCard.get(id) ?? id);
+      // Same mid-round-reload coverage for owned cards: seed from any
+      // existing gd.playerCards entries with location='inPlay'. We won't
+      // get retroactive buyCard / playCard notifications.
+      const pc = Array.isArray(gdNow?.playerCards) ? gdNow.playerCards : [];
+      cards.seedFromPlayerCards(pc);
     } catch {
       /* never break the page */
     }
@@ -811,6 +850,7 @@ function start(): void {
         stopFallback();
         settler.reset();
         placements.reset();
+        cards.reset();
         postToContent({ type: 'detached', reason: 'left the Agricola table' });
         lastStateKey = null;
         return;
@@ -821,6 +861,7 @@ function start(): void {
         stopFallback();
         settler.reset();
         placements.reset();
+        cards.reset();
         postToContent({ type: 'detached', reason: 'navigated to a new table' });
         lastStateKey = null;
         notifsSeen = 0;

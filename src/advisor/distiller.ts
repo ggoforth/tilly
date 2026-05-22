@@ -239,6 +239,7 @@ function playerView(
   accumByCard: Map<string, Record<string, number>>,
   trackedPlacements?: ReadonlyMap<string, TrackedPlacement>,
   liveResources?: LiveResourceMap,
+  trackedCards?: TrackedCardsMap,
 ): PlayerView {
   const cache = numericRecord(player.resources);
   const placementIds = placedByPlayer.get(String(player.id)) ?? [];
@@ -365,14 +366,44 @@ function playerView(
       // with canGrow=false, contradicting itself).
       canGrow: farm.emptyRooms > 0,
     },
-    played: Array.isArray(gd.playerCards)
-      ? gd.playerCards
-          .filter(
-            (c: Any) =>
-              String(c.pId) === String(player.id) && c.location === 'inPlay',
-          )
-          .map(toCardView)
-      : [],
+    played: (() => {
+      // Start with the gamedatas-derived inPlay cards.
+      const fromGd: CardView[] = Array.isArray(gd.playerCards)
+        ? gd.playerCards
+            .filter(
+              (c: Any) =>
+                String(c.pId) === String(player.id) && c.location === 'inPlay',
+            )
+            .map(toCardView)
+        : [];
+      // Union with notification-tracked cards (covers the gd.playerCards
+      // staleness window — verified live R6→R7, Fireplace bought via
+      // Improvements stayed absent from briefings 30+ seconds later).
+      // Look up full card details from cardById so the LLM gets rulesText
+      // and cost. Dedup by id so we never list the same card twice if
+      // both sources agree.
+      const seen = new Set(fromGd.map((c) => c.id));
+      const tracked = trackedCards?.get(String(player.id)) ?? [];
+      for (const t of tracked) {
+        if (seen.has(t.cardId)) continue;
+        const lookup = cardById.get(t.cardId);
+        if (lookup) {
+          fromGd.push(toCardView(lookup));
+        } else {
+          // Fallback: synthesize a minimal CardView from the notification
+          // payload — rulesText / cost unavailable, but the LLM at least
+          // sees that the card IS owned (preventing duplicate-recommend).
+          fromGd.push({
+            id: t.cardId,
+            name: t.cardName,
+            kind: /^Major_/.test(t.cardId) ? 'major' : 'minor',
+            rulesText: '',
+          });
+        }
+        seen.add(t.cardId);
+      }
+      return fromGd;
+    })(),
     placedFarmersThisRound: placementIds.map((id) => {
       // Prefer the display name the live notification carried — it's the
       // exact string BGA showed in the log ("Reed Bank") and avoids cases
@@ -509,6 +540,18 @@ export interface TrackedPlacement {
   pId: string;
   cardName: string;
 }
+
+/** Per-player notification-tracked card ownership. Same staleness motivation
+ *  as TrackedPlacement: `gd.playerCards[i].location === 'inPlay'` lags the
+ *  buy/play notifications by seconds (verified live: a Fireplace bought via
+ *  Improvements stayed absent from briefings 30+ seconds and many gamestate
+ *  transitions later). When supplied, the distiller UNIONS these with the
+ *  gd.playerCards inPlay filter result (dedup by id) so a freshly-built
+ *  card surfaces in `me.played` immediately. */
+export type TrackedCardsMap = ReadonlyMap<
+  string,
+  ReadonlyArray<{ cardId: string; cardName: string }>
+>;
 
 /** Per-player live resource counts scraped from BGA's DOM (`#resource_<pid>_<type>`).
  *  BGA updates the DOM synchronously in `notif_*` handlers while
@@ -675,6 +718,7 @@ export function distill(
   trackedPlacements?: ReadonlyMap<string, TrackedPlacement>,
   liveResources?: LiveResourceMap,
   liveAccumulators?: LiveAccumulatorMap,
+  trackedCards?: TrackedCardsMap,
 ): DistillResult {
   try {
     if (!gamedatas || typeof gamedatas !== 'object') {
@@ -754,6 +798,7 @@ export function distill(
           accumByCard,
           trackedPlacements,
           liveResources,
+          trackedCards,
         ),
       );
 
@@ -766,6 +811,7 @@ export function distill(
       accumByCard,
       trackedPlacements,
       liveResources,
+      trackedCards,
     );
     const round = typeof gd.turn === 'number' ? gd.turn : Number(gd.turn) || 0;
     const briefing: PositionBriefing = {

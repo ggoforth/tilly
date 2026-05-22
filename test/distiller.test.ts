@@ -816,6 +816,67 @@ test('summary uses "pigs" not "boar" so it matches resources.pig naming', () => 
   assert.doesNotMatch(r.briefing.summary!, /\bboar\b/);
 });
 
+test('distill merges trackedCards into briefing.me.played (gd.playerCards staleness fallback)', () => {
+  // Live R7 regression: user bought Fireplace via Improvements at R6 (3:36:41
+  // PM `buyCard` notif). Briefings 30+ seconds and many gamestate transitions
+  // later still showed me.played:[] because gd.playerCards hadn't been
+  // refreshed. LLM re-recommended building Fireplace. Same staleness class
+  // as the meeples / dropZones bugs — fixed by a notification-driven
+  // CardTracker mirroring PlacementTracker.
+  const fakeGd: any = {
+    gamestate: { id: 700, name: 'placeFarmer', active_player: ME, possibleactions: ['actPlaceFarmer'] },
+    players: { [ME]: { id: ME, name: 'me', resources: { food: 7 } } },
+    // gd.playerCards is empty — the staleness window. Tracker must rescue.
+    playerCards: [],
+    meeples: [
+      { id: 1, type: 'farmer', pId: ME, location: 'board', x: 1, y: 1 },
+      { id: 2, type: 'farmer', pId: ME, location: 'board', x: 1, y: 3 },
+    ],
+    cards: {
+      visible: [
+        // Fireplace card metadata available so toCardView can enrich.
+        { id: 'Major_Fireplace1', name: 'Fireplace', kind: 'major', desc: ['cooking'] },
+      ],
+    },
+    turn: 7,
+  };
+  const trackedCards = new Map<string, Array<{ cardId: string; cardName: string }>>([
+    [ME, [{ cardId: 'Major_Fireplace1', cardName: 'Fireplace' }]],
+  ]);
+  const r = distill(fakeGd, ME, undefined, undefined, undefined, trackedCards);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  const played = r.briefing.me.played;
+  assert.equal(played.length, 1, 'must include the tracker-only card');
+  assert.equal(played[0]!.id, 'Major_Fireplace1');
+  assert.equal(played[0]!.name, 'Fireplace');
+});
+
+test('distill dedups when gd.playerCards AND trackedCards both have a card', () => {
+  // After gd.playerCards eventually refreshes, the tracked entry still
+  // exists. Distiller must dedup by id so the played list doesn't show
+  // the same card twice.
+  const fakeGd: any = {
+    gamestate: { id: 700, name: 'placeFarmer', active_player: ME, possibleactions: ['actPlaceFarmer'] },
+    players: { [ME]: { id: ME, name: 'me', resources: {} } },
+    playerCards: [
+      { id: 'Major_Fireplace1', pId: ME, location: 'inPlay', name: 'Fireplace', kind: 'major' },
+    ],
+    meeples: [{ id: 1, type: 'farmer', pId: ME, location: 'board', x: 1, y: 1 }],
+    cards: { visible: [] },
+    turn: 7,
+  };
+  const trackedCards = new Map<string, Array<{ cardId: string; cardName: string }>>([
+    [ME, [{ cardId: 'Major_Fireplace1', cardName: 'Fireplace' }]],
+  ]);
+  const r = distill(fakeGd, ME, undefined, undefined, undefined, trackedCards);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  // EXACTLY one entry — both sources agree, dedup picks the gd one.
+  assert.equal(r.briefing.me.played.length, 1);
+  assert.equal(r.briefing.me.played[0]!.id, 'Major_Fireplace1');
+});
+
 test('family.canGrow is TRUE when farm has an empty room', () => {
   // Live R8 regression: emptyRooms=1 but canGrow=false in the same briefing
   // — internally contradictory. canGrow was hardcoded to false in distiller;
