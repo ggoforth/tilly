@@ -92,6 +92,45 @@ test('buildMessages: user/assistant messages stay as plain strings', () => {
   }
 });
 
+test('buildMessages: advise instruction includes the STRATEGY directive (Stream B MVP #0)', () => {
+  // Locks in the strategic-commitment loop: every advice output must
+  // begin with a STRATEGY line so the chat history carries the
+  // committed strategy forward to the next turn. Regression check that
+  // future preamble edits don't accidentally drop this requirement.
+  const msgs = buildMessages({
+    kind: 'advise',
+    requestId: 'test-strategy',
+    briefing: baseBriefing,
+  });
+  // ADVISE_INSTRUCTION is the last user message in an advise turn.
+  const last = msgs[msgs.length - 1];
+  assert.ok(last && last.role === 'user', 'last message must be the advise instruction');
+  const text = typeof last.content === 'string'
+    ? last.content
+    : (last.content as Array<{ text: string }>).map((b) => b.text).join('');
+  assert.match(text, /STRATEGY:/, 'advise instruction must require a STRATEGY line');
+  assert.match(text, /STRATEGY must be FIRST/, 'advise instruction must specify STRATEGY ordering (parser is greedy on WHY)');
+  assert.match(text, /MOVE:/, 'MOVE: line must still be required');
+  assert.match(text, /WHY:/, 'WHY: line must still be required');
+});
+
+test('parseAdvice still extracts MOVE/WHY correctly when STRATEGY line is prepended', async () => {
+  // Defensive: the parser uses greedy `WHY:\s*([\s\S]+)`. STRATEGY MUST
+  // come before MOVE/WHY in the output; otherwise the rationale gets
+  // polluted by trailing strategy text. This test verifies the parser
+  // handles the new format correctly.
+  const { parseAdvice } = await import('../src/content/advisor-client');
+  const sample = [
+    'STRATEGY: clay→bread engine via Clay Deliveryman; 3 fields by R7',
+    'MOVE: Grab Forest',
+    'WHY: 6 wood opens Farm Expansion next turn, setting up your 3rd room.',
+  ].join('\n');
+  const r = parseAdvice(sample);
+  assert.equal(r.move, 'Grab Forest', 'MOVE must extract clean (no STRATEGY contamination)');
+  assert.match(r.rationale, /6 wood opens Farm Expansion/, 'WHY rationale must extract correctly');
+  assert.doesNotMatch(r.rationale, /STRATEGY:/, 'rationale must NOT contain the STRATEGY line');
+});
+
 test('buildMessages: get-last-prompt and cancel produce no messages', () => {
   // Sanity — these are control-plane requests, not chat completions.
   assert.deepEqual(
