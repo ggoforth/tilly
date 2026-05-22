@@ -838,7 +838,18 @@ export function distill(
       me: meView,
       opponents,
       actionBoard: actionBoard(gd, me, occupancyByCard, accumByCard),
-      availableMajorImprovements: majors,
+      // Filter out majors that ANY player has already built. gd.playerCards
+      // lags buyCard by seconds, so a just-built major still shows
+      // pId==null and slips into the `majors` array. But the CardTracker-
+      // rescued played[] on each playerView is fresh. Dedup against that
+      // union — without this, the LLM saw Pottery in BOTH me.played AND
+      // availableMajorImprovements and re-recommended it (live R11 trace).
+      availableMajorImprovements: (() => {
+        const builtIds = new Set<string>();
+        for (const c of meView.played) builtIds.add(c.id);
+        for (const opp of opponents) for (const c of opp.played) builtIds.add(c.id);
+        return majors.filter((m) => !builtIds.has(m.id));
+      })(),
     };
     if (draftPool) briefing.draftPool = draftPool;
     // Compute the LLM cheat-sheet summary last so it sees all the derived

@@ -852,6 +852,47 @@ test('distill merges trackedCards into briefing.me.played (gd.playerCards stalen
   assert.equal(played[0]!.name, 'Fireplace');
 });
 
+test('availableMajorImprovements excludes majors any player has already built (live R11 regression)', () => {
+  // Live R11 trace: user built Pottery via Improvements, briefing showed
+  // Pottery in BOTH me.played (via CardTracker rescue) AND
+  // availableMajorImprovements (because gd.playerCards still had it with
+  // pId==null). LLM saw "still available" and re-recommended it.
+  // Fix: post-filter availableMajorImprovements against the union of all
+  // players' played[] (which IS fresh because CardTracker merged in).
+  const fakeGd: any = {
+    gamestate: { id: 700, name: 'placeFarmer', active_player: ME, possibleactions: ['actPlaceFarmer'] },
+    players: { [ME]: { id: ME, name: 'me', resources: {} } },
+    // gd.playerCards still shows Pottery as available (pId=null) even
+    // though the user just bought it — classic staleness.
+    playerCards: [
+      { id: 'Major_Pottery', type: 'major', pId: null, name: 'Pottery', kind: 'major' },
+      { id: 'Major_Well', type: 'major', pId: null, name: 'Well', kind: 'major' },
+    ],
+    meeples: [{ id: 1, type: 'farmer', pId: ME, location: 'board', x: 1, y: 1 }],
+    cards: { visible: [
+      { id: 'Major_Pottery', name: 'Pottery', kind: 'major' },
+      { id: 'Major_Well', name: 'Well', kind: 'major' },
+    ] },
+    turn: 11,
+  };
+  // The tracker has the buyCard for Pottery (fresh).
+  const trackedCards = new Map<string, Array<{ cardId: string; cardName: string }>>([
+    [ME, [{ cardId: 'Major_Pottery', cardName: 'Pottery' }]],
+  ]);
+  const r = distill(fakeGd, ME, undefined, undefined, undefined, trackedCards);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  const playedIds = r.briefing.me.played.map((c) => c.id);
+  assert.ok(playedIds.includes('Major_Pottery'), 'Pottery must appear in me.played');
+  const availIds = r.briefing.availableMajorImprovements.map((c) => c.id);
+  assert.ok(
+    !availIds.includes('Major_Pottery'),
+    `Pottery MUST be filtered out of availableMajorImprovements once built; got: ${availIds.join(', ')}`,
+  );
+  // The OTHER unbuilt major (Well) must still be listed.
+  assert.ok(availIds.includes('Major_Well'), 'Well (not built) must still be available');
+});
+
 test('distill dedups when gd.playerCards AND trackedCards both have a card', () => {
   // After gd.playerCards eventually refreshes, the tracked entry still
   // exists. Distiller must dedup by id so the played list doesn't show
