@@ -85,6 +85,11 @@ export interface SidebarHandlers {
    *  the LLM, or null if nothing has been sent yet. Wired to the
    *  "Copy last prompt" button in the Events panel. */
   onCopyPrompt(): Promise<string | null>;
+  /** Fires when the user collapses (true) or re-opens (false) the chat
+   *  panel. Content script uses this to gate auto-advice — when the panel
+   *  is hidden the user can't see streamed advice anyway, so making the
+   *  OpenRouter request would just burn credits. */
+  onCollapsedChanged(collapsed: boolean): void;
 }
 
 /** Format a timestamp into a short hh:mm label. Accepts an ISO string,
@@ -1597,6 +1602,14 @@ export class Sidebar {
     );
     this.els.tab!.classList.toggle('hidden', !c);
     this.dock();
+    // Notify the content script so it can gate auto-advice requests.
+    // Without this, the LLM keeps burning credits while the panel is
+    // hidden (user can't see the responses anyway).
+    try {
+      this.handlers.onCollapsedChanged(c);
+    } catch {
+      /* handler errors must not break the UI toggle */
+    }
   }
 
   private scrollToBottom(force: boolean): void {

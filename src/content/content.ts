@@ -66,6 +66,11 @@ async function main(): Promise<void> {
   // Advisor state (separate from telemetry capture).
   let lastSnapshotId = ''; // newest snapshot event id, for notification linkage
   let advisorEnabled = false;
+  // Mirrors the sidebar's collapsed flag. When true, triggerAdvice() is a
+  // no-op — the user can't see streamed advice on a hidden panel anyway,
+  // so making the OpenRouter request would just burn credits. Synced via
+  // the onCollapsedChanged handler the sidebar fires on every toggle.
+  let sidebarCollapsed = false;
   // Three-phase indicator: reading (waiting for a fresh briefing from the
   // probe), thinking (LLM request dispatched, no tokens yet), streaming
   // (tokens flowing). 'idle' / 'done' / 'error' are terminal and hide the
@@ -148,6 +153,14 @@ async function main(): Promise<void> {
     onOpenOptions: () => void chrome.runtime.openOptionsPage(),
     onSendChat: (text) => sendChat(text),
     onCopyPrompt: () => advisorClient.getLastPrompt(),
+    onCollapsedChanged: (c) => {
+      sidebarCollapsed = c;
+      pushFeed(
+        'advisor',
+        c ? 'auto-advice paused (sidebar collapsed)' : 'auto-advice resumed',
+      );
+      scheduleRender();
+    },
   });
   sidebar.mount();
 
@@ -252,6 +265,11 @@ async function main(): Promise<void> {
 
   function triggerAdvice(briefing: PositionBriefing, gamestateId?: string | number): void {
     if (!advisorEnabled) return;
+    // Don't burn credits on advice the user can't see. The chat panel is
+    // hidden when collapsed, so a streamed response would just sit
+    // invisible in the transcript. User reopens → next decision fires
+    // normally; in the meantime they save the API spend.
+    if (sidebarCollapsed) return;
     // Only kill an in-flight advice — a parallel chat must keep streaming.
     advisorClient.cancelAdvise();
     currentBriefing = briefing;
